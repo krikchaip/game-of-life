@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["./lib/*"],
+      "@test/*": ["./test/*"],
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": ["lib", "test", "src"]
+}
