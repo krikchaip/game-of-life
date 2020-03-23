@@ -14,7 +14,20 @@
     "validate:format": "prettier --ignore-path .gitignore --check \"{lib,src,test}/**/*.{ts,tsx}\"",
     "validate:lint": "eslint --ignore-path .gitignore --ext .ts,.tsx .",
     "validate:types": "tsc",
-    "validate": "yarn validate:format && yarn validate:lint && yarn validate:types && yarn build"
+    "validate": "yarn validate:format && yarn validate:lint && yarn validate:types"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn validate && yarn build"
+    }
+  },
+  "lint-staged": {
+    "{lib,src,test}/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint",
+      "git add --update"
+    ]
   },
   "dependencies": {
     "react": "^16.13.1",
@@ -36,6 +49,8 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-react": "^7.19.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.0.1",
     "typescript": "^3.8.3"
