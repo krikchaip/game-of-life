@@ -10,7 +10,11 @@
     "prebuild": "rm -rf dist",
     "start": "parcel public/index.html -p 3000",
     "build": "parcel build public/index.html --experimental-scope-hoisting",
-    "validate": "tsc"
+    "format": "prettier --ignore-path .gitignore --write \"{lib,src,test}/**/*.{ts,tsx}\"",
+    "validate:format": "prettier --ignore-path .gitignore --check \"{lib,src,test}/**/*.{ts,tsx}\"",
+    "validate:lint": "eslint --ignore-path .gitignore --ext .ts,.tsx .",
+    "validate:types": "tsc",
+    "validate": "yarn validate:format && yarn validate:lint && yarn validate:types && yarn build"
   },
   "dependencies": {
     "react": "^16.13.1",
@@ -23,11 +27,17 @@
     "@babel/preset-typescript": "^7.9.0",
     "@types/react": "^16.9.25",
     "@types/react-dom": "^16.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
     "babel-plugin-module-resolver": "^4.0.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-typescript": "^7.0.0-alpha.19",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-react": "^7.19.0",
     "parcel-bundler": "^1.12.4",
+    "prettier": "^2.0.1",
     "typescript": "^3.8.3"
   }
 }
