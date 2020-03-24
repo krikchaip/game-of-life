@@ -17,7 +17,7 @@
     "validate:format": "prettier --ignore-path .gitignore --check \"{lib,src,test}/**/*.{ts,tsx}\"",
     "validate:lint": "eslint --color --ignore-path .gitignore --ext .ts,.tsx .",
     "validate:types": "tsc --pretty",
-    "validate:tests": "jest --colors"
+    "validate:tests": "jest --colors --passWithNoTests"
   },
   "husky": {
     "hooks": {
