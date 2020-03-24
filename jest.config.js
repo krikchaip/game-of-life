@@ -10,6 +10,10 @@ module.exports = {
   },
   setupFilesAfterEnv: ['@testing-library/jest-dom'],
   collectCoverageFrom: ['<rootDir>/{lib,src}/**/*.{ts,tsx}'],
+  watchPlugins: [
+    'jest-watch-typeahead/filename',
+    'jest-watch-typeahead/testname',
+  ],
   globals: {
     'ts-jest': {
       babelConfig: true,
