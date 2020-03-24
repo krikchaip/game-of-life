@@ -15,5 +15,5 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["lib", "test", "src"]
+  "include": ["lib", "test", "src", "typings"]
 }
