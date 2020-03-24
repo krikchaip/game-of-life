@@ -9,6 +9,7 @@ module.exports = {
     '\\.(jpe?g|png)': '<rootDir>/test/assets-mock',
   },
   setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  collectCoverageFrom: ['<rootDir>/{lib,src}/**/*.{ts,tsx}'],
   globals: {
     'ts-jest': {
       babelConfig: true,

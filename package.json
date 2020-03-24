@@ -11,12 +11,13 @@
     "start": "parcel public/index.html -p 3000",
     "build": "parcel build public/index.html --experimental-scope-hoisting",
     "test": "jest --watch",
+    "coverage": "jest --coverage",
     "format": "prettier --ignore-path .gitignore --write \"{lib,src,test}/**/*.{ts,tsx}\"",
+    "validate": "run-p --aggregate-output validate:*",
     "validate:format": "prettier --ignore-path .gitignore --check \"{lib,src,test}/**/*.{ts,tsx}\"",
     "validate:lint": "eslint --color --ignore-path .gitignore --ext .ts,.tsx .",
     "validate:types": "tsc --pretty",
-    "validate:tests": "jest --colors",
-    "validate": "run-p --aggregate-output validate:*"
+    "validate:tests": "jest --colors"
   },
   "husky": {
     "hooks": {
@@ -42,6 +43,7 @@
     "@babel/preset-react": "^7.9.1",
     "@babel/preset-typescript": "^7.9.0",
     "@testing-library/jest-dom": "^5.1.1",
+    "@testing-library/react": "^10.0.1",
     "@types/jest": "^25.1.4",
     "@types/react": "^16.9.25",
     "@types/react-dom": "^16.9.5",
