@@ -13,9 +13,9 @@
     "test": "jest --watch",
     "format": "prettier --ignore-path .gitignore --write \"{lib,src,test}/**/*.{ts,tsx}\"",
     "validate:format": "prettier --ignore-path .gitignore --check \"{lib,src,test}/**/*.{ts,tsx}\"",
-    "validate:lint": "eslint --ignore-path .gitignore --ext .ts,.tsx .",
-    "validate:types": "tsc",
-    "validate:tests": "jest",
+    "validate:lint": "eslint --color --ignore-path .gitignore --ext .ts,.tsx .",
+    "validate:types": "tsc --pretty",
+    "validate:tests": "jest --colors",
     "validate": "run-p --aggregate-output validate:*"
   },
   "husky": {
@@ -27,8 +27,8 @@
   "lint-staged": {
     "{lib,src,test}/**/*.{ts,tsx}": [
       "prettier --write",
-      "eslint",
-      "jest --findRelatedTests",
+      "eslint --color",
+      "jest --colors --findRelatedTests",
       "git add --update"
     ]
   },
