@@ -152,4 +152,24 @@ describe('nextState (classic)', () => {
       expect(processor.shouldAlive).toBeCalled()
     })
   })
+
+  xdescribe('oscillators', () => {
+    it('blinker', () => {
+      const currentState = processor.parseState(`
+        x x x
+        o o o
+        x x x
+      `)
+      const nextState = processor.nextState(currentState, processor.shouldAlive)
+
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x o x
+        x o x
+        x o x
+        "
+      `)
+      expect(processor.shouldAlive).toBeCalled()
+    })
+  })
 })

@@ -41,6 +41,43 @@ export function nextState(
   currentState: boolean[][],
   cellEvaluator: (isAlive: boolean, neighbors: number) => boolean
 ) {
+  // target to check with `cellEvaluator` function
+  const aliveTargets: { [rowIdx: number]: Set<number> } = {}
+  const deadTargets: { [rowIdx: number]: Set<number> } = {}
+
+  // mark living cells
+  currentState.forEach((row, r) => {
+    row.forEach((col, c) => {
+      if (col) {
+        if (!aliveTargets[r]) return (aliveTargets[r] = new Set([c]))
+        return aliveTargets[r].add(c)
+      }
+    })
+  })
+
+  // mark surrounding spaces
+  Object.keys(aliveTargets).forEach((rowIdx: any) => {
+    aliveTargets[rowIdx].forEach((colIdx) => {
+      const surroundings = [
+        [+rowIdx - 1, colIdx - 1],
+        [+rowIdx - 1, colIdx],
+        [+rowIdx - 1, colIdx + 1],
+        [+rowIdx, colIdx - 1],
+        [+rowIdx, colIdx + 1],
+        [+rowIdx + 1, colIdx - 1],
+        [+rowIdx + 1, colIdx],
+        [+rowIdx + 1, colIdx + 1],
+      ]
+
+      surroundings.forEach(([r, c]) => {
+        const value = currentState[r]?.[c]
+        if (typeof value === undefined || value) return
+        if (!deadTargets[r]) return (deadTargets[r] = new Set([c]))
+        return deadTargets[r].add(c)
+      })
+    })
+  })
+
   cellEvaluator(false, 0)
   return currentState
 }
