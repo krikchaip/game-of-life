@@ -216,13 +216,122 @@ describe('nextState (classic)', () => {
         o o o
         x x x
       `)
-      const nextState = processor.nextState(currentState, processor.shouldAlive)
 
+      let nextState = processor.nextState(currentState, processor.shouldAlive)
       expect(processor.readState(nextState)).toMatchInlineSnapshot(`
         "
         x o x
         x o x
         x o x
+        "
+      `)
+      expect(processor.shouldAlive).toBeCalled()
+
+      nextState = processor.nextState(nextState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x x
+        o o o
+        x x x
+        "
+      `)
+    })
+
+    it('toad', () => {
+      const currentState = processor.parseState(`
+        x x x x
+        x o o o
+        o o o x
+        x x x x
+      `)
+
+      let nextState = processor.nextState(currentState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x o x
+        o x x o
+        o x x o
+        x o x x
+        "
+      `)
+      expect(processor.shouldAlive).toBeCalled()
+
+      nextState = processor.nextState(nextState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x x x
+        x o o o
+        o o o x
+        x x x x
+        "
+      `)
+    })
+  })
+
+  describe('spaceships', () => {
+    it('glider', () => {
+      const currentState = processor.parseState(`
+        x o x x
+        x x o x
+        o o o x
+        x x x x
+      `)
+
+      let nextState = processor.nextState(currentState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x x x
+        o x o x
+        x o o x
+        x o x x
+        "
+      `)
+      expect(processor.shouldAlive).toBeCalled()
+
+      nextState = processor.nextState(currentState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x x x
+        x x o x
+        o x o x
+        x o o x
+        "
+      `)
+
+      nextState = processor.nextState(currentState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x x x
+        x o x x
+        x x o o
+        x o o x
+        "
+      `)
+
+      nextState = processor.nextState(currentState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x x x
+        x x o x
+        x x x o
+        x o o o
+        "
+      `)
+    })
+
+    it('glider (off-grid)', () => {
+      const currentState = processor.parseState(`
+        x o x
+        x x o
+        o o o
+      `)
+
+      const nextState = processor.nextState(currentState, processor.shouldAlive)
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x x x
+        o x o
+        x o o
         "
       `)
       expect(processor.shouldAlive).toBeCalled()
