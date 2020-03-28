@@ -151,6 +151,62 @@ describe('nextState (classic)', () => {
       `)
       expect(processor.shouldAlive).toBeCalled()
     })
+
+    it('loaf', () => {
+      const currentState = processor.parseState(`
+        x o o x
+        o x x o
+        x o x o
+        x x o x
+      `)
+      const nextState = processor.nextState(currentState, processor.shouldAlive)
+
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x o o x
+        o x x o
+        x o x o
+        x x o x
+        "
+      `)
+      expect(processor.shouldAlive).toBeCalled()
+    })
+
+    it('boat', () => {
+      const currentState = processor.parseState(`
+        o o x
+        o x o
+        x o x
+      `)
+      const nextState = processor.nextState(currentState, processor.shouldAlive)
+
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        o o x
+        o x o
+        x o x
+        "
+      `)
+      expect(processor.shouldAlive).toBeCalled()
+    })
+
+    it('tub', () => {
+      const currentState = processor.parseState(`
+        x o x
+        o x o
+        x o x
+      `)
+      const nextState = processor.nextState(currentState, processor.shouldAlive)
+
+      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+        "
+        x o x
+        o x o
+        x o x
+        "
+      `)
+      expect(processor.shouldAlive).toBeCalled()
+    })
   })
 
   describe('oscillators', () => {
