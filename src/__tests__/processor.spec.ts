@@ -153,7 +153,7 @@ describe('nextState (classic)', () => {
     })
   })
 
-  xdescribe('oscillators', () => {
+  describe('oscillators', () => {
     it('blinker', () => {
       const currentState = processor.parseState(`
         x x x

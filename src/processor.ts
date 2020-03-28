@@ -71,13 +71,79 @@ export function nextState(
 
       surroundings.forEach(([r, c]) => {
         const value = currentState[r]?.[c]
-        if (typeof value === undefined || value) return
+        if (typeof value === 'undefined' || value) return
         if (!deadTargets[r]) return (deadTargets[r] = new Set([c]))
         return deadTargets[r].add(c)
       })
     })
   })
 
-  cellEvaluator(false, 0)
+  // new alive targets to save in currentState
+  const newTargets: { [rowIdx: number]: { [colIdx: number]: boolean } } = {}
+
+  // update living cell targets
+  Object.keys(aliveTargets).forEach((rowIdx: any) => {
+    aliveTargets[rowIdx].forEach((colIdx) => {
+      let neighbors = 0
+      const surroundings = [
+        [+rowIdx - 1, colIdx - 1],
+        [+rowIdx - 1, colIdx],
+        [+rowIdx - 1, colIdx + 1],
+        [+rowIdx, colIdx - 1],
+        [+rowIdx, colIdx + 1],
+        [+rowIdx + 1, colIdx - 1],
+        [+rowIdx + 1, colIdx],
+        [+rowIdx + 1, colIdx + 1],
+      ]
+
+      surroundings.forEach(([r, c]) => {
+        const value = currentState[r]?.[c]
+        if (typeof value === 'undefined' || !value) return
+        neighbors++
+      })
+
+      const newState = cellEvaluator(currentState[rowIdx][colIdx], neighbors)
+
+      if (!newTargets[rowIdx])
+        return (newTargets[rowIdx] = { [colIdx]: newState })
+      return (newTargets[rowIdx][colIdx] = newState)
+    })
+  })
+
+  // update dead cell targets
+  Object.keys(deadTargets).forEach((rowIdx: any) => {
+    deadTargets[rowIdx].forEach((colIdx) => {
+      let neighbors = 0
+      const surroundings = [
+        [+rowIdx - 1, colIdx - 1],
+        [+rowIdx - 1, colIdx],
+        [+rowIdx - 1, colIdx + 1],
+        [+rowIdx, colIdx - 1],
+        [+rowIdx, colIdx + 1],
+        [+rowIdx + 1, colIdx - 1],
+        [+rowIdx + 1, colIdx],
+        [+rowIdx + 1, colIdx + 1],
+      ]
+
+      surroundings.forEach(([r, c]) => {
+        const value = currentState[r]?.[c]
+        if (typeof value === 'undefined' || !value) return
+        neighbors++
+      })
+
+      const newState = cellEvaluator(currentState[rowIdx][colIdx], neighbors)
+
+      if (!newTargets[rowIdx])
+        return (newTargets[rowIdx] = { [colIdx]: newState })
+      return (newTargets[rowIdx][colIdx] = newState)
+    })
+  })
+
+  Object.keys(newTargets).forEach((row: any) => {
+    Object.keys(newTargets[row]).forEach((col: any) => {
+      currentState[row][col] = newTargets[row][col]
+    })
+  })
+
   return currentState
 }
