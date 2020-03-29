@@ -1,45 +1,52 @@
 import * as processor from '../processor'
 
-describe('shouldAlive (classic)', () => {
+describe('game rule (classic)', () => {
   it('live cell,  <2 neighbors -> die', () => {
-    expect(processor.shouldAlive(true, 0)).toBe(false)
-    expect(processor.shouldAlive(true, 1)).toBe(false)
+    expect(processor.classicRule(true, 0)).toBe(false)
+    expect(processor.classicRule(true, 1)).toBe(false)
   })
 
   it('live cell, 2-3 neighbors -> live', () => {
-    expect(processor.shouldAlive(true, 2)).toBe(true)
-    expect(processor.shouldAlive(true, 3)).toBe(true)
+    expect(processor.classicRule(true, 2)).toBe(true)
+    expect(processor.classicRule(true, 3)).toBe(true)
   })
 
   it('live cell,  >3 neighbors -> die', () => {
-    expect(processor.shouldAlive(true, 4)).toBe(false)
-    expect(processor.shouldAlive(true, 5)).toBe(false)
+    expect(processor.classicRule(true, 4)).toBe(false)
+    expect(processor.classicRule(true, 5)).toBe(false)
   })
 
   it('dead cell,   3 neighbors -> live', () => {
-    expect(processor.shouldAlive(false, 3)).toBe(true)
-    expect(processor.shouldAlive(false, 2)).toBe(false)
-    expect(processor.shouldAlive(false, 4)).toBe(false)
+    expect(processor.classicRule(false, 3)).toBe(true)
+    expect(processor.classicRule(false, 2)).toBe(false)
+    expect(processor.classicRule(false, 4)).toBe(false)
   })
 
   describe('validation', () => {
     it('throws negative neighbors', () => {
-      expect(() => processor.shouldAlive(false, -1)).toThrow(expect.any(Error))
-      expect(() => processor.shouldAlive(true, -1)).toThrow(expect.any(Error))
+      expect(() => processor.classicRule(false, -1)).toThrow(expect.any(Error))
+      expect(() => processor.classicRule(true, -1)).toThrow(expect.any(Error))
     })
   })
 })
 
-describe('readState', () => {
-  it('convert nested array to readable string', () => {
-    let narray = [
-      [false, false, false, false],
-      [false, true, true, false],
-      [false, true, true, false],
-      [false, false, false, false],
-    ]
+describe('stringify', () => {
+  it('convert game state into readable string', () => {
+    const gameState: processor.GameState = {
+      grid: { rows: 4, cols: 4 },
+      population: {
+        '1': {
+          '1': true,
+          '2': true,
+        },
+        '2': {
+          '1': true,
+          '2': true,
+        },
+      },
+    }
 
-    expect(processor.readState(narray)).toMatchInlineSnapshot(`
+    expect(processor.stringify(gameState)).toMatchInlineSnapshot(`
       "
       x x x x
       x o o x
@@ -48,55 +55,84 @@ describe('readState', () => {
       "
     `)
 
-    narray = [
-      [false, true, true, false],
-      [true, false, false, true],
-      [false, true, true, false],
-    ]
+    gameState.population = {
+      '0': {
+        '1': true,
+        '2': true,
+      },
+      '1': {
+        '0': true,
+        '3': true,
+      },
+      '2': {
+        '1': true,
+        '2': true,
+      },
+    }
 
-    expect(processor.readState(narray)).toMatchInlineSnapshot(`
+    expect(processor.stringify(gameState)).toMatchInlineSnapshot(`
       "
       x o o x
       o x x o
       x o o x
+      x x x x
       "
     `)
   })
 })
 
-describe('parseState', () => {
-  it('convert state string to nested array', () => {
-    let sstring = `
+describe('parse', () => {
+  it('rehydrate game state from text', () => {
+    let text = `
       x x x x
       x o o x
       x o o x
       x x x x
     `
 
-    expect(processor.parseState(sstring)).toEqual([
-      [false, false, false, false],
-      [false, true, true, false],
-      [false, true, true, false],
-      [false, false, false, false],
-    ])
+    expect(processor.parse(text)).toEqual<processor.GameState>({
+      grid: { rows: 4, cols: 4 },
+      population: {
+        '1': {
+          '1': true,
+          '2': true,
+        },
+        '2': {
+          '1': true,
+          '2': true,
+        },
+      },
+    })
 
-    sstring = `
+    text = `
       x o o x
       o x x o
       x o o x
     `
 
-    expect(processor.parseState(sstring)).toEqual([
-      [false, true, true, false],
-      [true, false, false, true],
-      [false, true, true, false],
-    ])
+    expect(processor.parse(text)).toEqual<processor.GameState>({
+      grid: { rows: 3, cols: 4 },
+      population: {
+        '0': {
+          '1': true,
+          '2': true,
+        },
+        '1': {
+          '0': true,
+          '3': true,
+        },
+        '2': {
+          '1': true,
+          '2': true,
+        },
+      },
+    })
   })
 
   describe('validation', () => {
     it('wrong character', () => {
       expect(() =>
-        processor.parseState(`
+        processor.parse(`
         - o o -
         o - - o
         - o o -
@@ -106,24 +142,21 @@ describe('parseState', () => {
   })
 })
 
-describe('nextState (classic)', () => {
-  const spy = jest.spyOn(processor, 'shouldAlive')
-
-  afterEach(() => {
-    spy.mockClear()
-  })
-
+describe('next generation (classic)', () => {
   describe('still lifes', () => {
     it('block', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x x x x
         x o o x
         x o o x
         x x x x
       `)
-      const nextState = processor.nextState(currentState, processor.shouldAlive)
+      const nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
 
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x x
         x o o x
@@ -131,37 +164,41 @@ describe('nextState (classic)', () => {
         x x x x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
     })
 
     it('bee-hive', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x o o x
         o x x o
         x o o x
       `)
-      const nextState = processor.nextState(currentState, processor.shouldAlive)
+      const nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
 
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x o o x
         o x x o
         x o o x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
     })
 
     it('loaf', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x o o x
         o x x o
         x o x o
         x x o x
       `)
-      const nextState = processor.nextState(currentState, processor.shouldAlive)
+      const nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
 
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x o o x
         o x x o
@@ -169,66 +206,71 @@ describe('nextState (classic)', () => {
         x x o x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
     })
 
     it('boat', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         o o x
         o x o
         x o x
       `)
-      const nextState = processor.nextState(currentState, processor.shouldAlive)
+      const nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
 
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         o o x
         o x o
         x o x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
     })
 
     it('tub', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x o x
         o x o
         x o x
       `)
-      const nextState = processor.nextState(currentState, processor.shouldAlive)
+      const nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
 
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x o x
         o x o
         x o x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
     })
   })
 
   describe('oscillators', () => {
     it('blinker', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x x x
         o o o
         x x x
       `)
 
-      let nextState = processor.nextState(currentState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      let nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x o x
         x o x
         x o x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
 
-      nextState = processor.nextState(nextState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      nextState = processor.nextGeneration(nextState, processor.classicRule)
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x
         o o o
@@ -238,15 +280,18 @@ describe('nextState (classic)', () => {
     })
 
     it('toad', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x x x x
         x o o o
         o o o x
         x x x x
       `)
 
-      let nextState = processor.nextState(currentState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      let nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x o x
         o x x o
@@ -254,10 +299,9 @@ describe('nextState (classic)', () => {
         x o x x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
 
-      nextState = processor.nextState(nextState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      nextState = processor.nextGeneration(nextState, processor.classicRule)
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x x
         x o o o
@@ -270,15 +314,18 @@ describe('nextState (classic)', () => {
 
   describe('spaceships', () => {
     it('glider', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x o x x
         x x o x
         o o o x
         x x x x
       `)
 
-      let nextState = processor.nextState(currentState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      let nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x x
         o x o x
@@ -286,10 +333,9 @@ describe('nextState (classic)', () => {
         x o x x
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
 
-      nextState = processor.nextState(currentState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      nextState = processor.nextGeneration(nextState, processor.classicRule)
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x x
         x x o x
@@ -298,8 +344,8 @@ describe('nextState (classic)', () => {
         "
       `)
 
-      nextState = processor.nextState(currentState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      nextState = processor.nextGeneration(nextState, processor.classicRule)
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x x
         x o x x
@@ -308,8 +354,8 @@ describe('nextState (classic)', () => {
         "
       `)
 
-      nextState = processor.nextState(currentState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      nextState = processor.nextGeneration(nextState, processor.classicRule)
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x x
         x x o x
@@ -320,21 +366,23 @@ describe('nextState (classic)', () => {
     })
 
     it('glider (off-grid)', () => {
-      const currentState = processor.parseState(`
+      const currentState = processor.parse(`
         x o x
         x x o
         o o o
       `)
 
-      const nextState = processor.nextState(currentState, processor.shouldAlive)
-      expect(processor.readState(nextState)).toMatchInlineSnapshot(`
+      const nextState = processor.nextGeneration(
+        currentState,
+        processor.classicRule
+      )
+      expect(processor.stringify(nextState)).toMatchInlineSnapshot(`
         "
         x x x
         o x o
         x o o
         "
       `)
-      expect(processor.shouldAlive).toBeCalled()
     })
   })
 })

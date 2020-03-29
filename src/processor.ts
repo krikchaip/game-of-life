@@ -1,149 +1,155 @@
-export function shouldAlive(isAlive: boolean, neighbors: number) {
+export type Grid = { rows: number; cols: number }
+
+/** represents coordinate system in the game */
+export type Coordinates = {
+  [rowIdx: string]: {
+    [colIdx: string]: true
+  }
+}
+
+export type GameState = {
+  grid: Grid
+  population: Coordinates
+}
+
+/** determine whether space should be populated from current status and neighbors */
+export type GameRule = (populated: boolean, neighbors: number) => boolean
+
+export const classicRule: GameRule = (
+  populated: boolean,
+  neighbors: number
+) => {
   if (neighbors < 0) throw new Error('neighbors must equals or greater than 0')
 
   if (neighbors < 2) return false
-  if (neighbors === 2) return isAlive
+  if (neighbors === 2) return populated
   if (neighbors === 3) return true
 
   return false
 }
 
-export function readState(currentState: boolean[][]) {
-  return (
-    currentState.reduce(
-      (acc, curr) => acc + '\n' + curr.map((s) => (s ? 'o' : 'x')).join(' '),
-      ''
-    ) + '\n'
-  )
+export function stringify(state: GameState) {
+  const { grid, population } = state
+
+  let result = ''
+
+  for (let row = 0; row < grid.rows; row++) {
+    for (let col = 0; col < grid.cols; col++) {
+      const char = population[row]?.[col] ? 'o' : 'x'
+      const sep = col < grid.cols - 1 ? ' ' : '\n'
+      result += char + sep
+    }
+  }
+
+  result = '\n' + result
+
+  return result
 }
 
-export function parseState(stateString: string) {
-  return stateString
+export function parse(text: string) {
+  const grid = text
     .trim()
     .split(/\s{2,}/)
-    .map((row) =>
-      row.split(' ').map((c) => {
-        switch (c) {
+    .map((row) => row.split(' '))
+
+  const rows = grid.length
+  const cols = grid.map((row) => row.length).sort()[0]
+
+  return {
+    grid: { rows, cols },
+    population: grid.reduce((acc, row, rowIdx) => {
+      for (let colIdx = 0; colIdx < cols; colIdx++) {
+        switch (row[colIdx]) {
           case 'x':
-            return false
+            break
           case 'o':
-            return true
+            if (!acc[rowIdx]) acc[rowIdx] = { [colIdx]: true }
+            else acc[rowIdx][colIdx] = true
+            break
           default:
             throw new Error(
               "character must be only either 'x' or 'o' with single space between."
             )
         }
-      })
-    )
+      }
+      return acc
+    }, {} as Coordinates),
+  }
 }
 
-export function nextState(
-  currentState: boolean[][],
-  cellEvaluator: (isAlive: boolean, neighbors: number) => boolean
-) {
-  // target to check with `cellEvaluator` function
-  const aliveTargets: { [rowIdx: number]: Set<number> } = {}
-  const deadTargets: { [rowIdx: number]: Set<number> } = {}
-
-  // mark living cells
-  currentState.forEach((row, r) => {
-    row.forEach((col, c) => {
-      if (col) {
-        if (!aliveTargets[r]) return (aliveTargets[r] = new Set([c]))
-        return aliveTargets[r].add(c)
-      }
-    })
-  })
+export function nextGeneration(
+  currentState: GameState,
+  rule: GameRule
+): GameState {
+  const { grid, population } = currentState
+  const surroundingSpaces: Coordinates = {}
+  const nextGen: Coordinates = {}
 
   // mark surrounding spaces
-  Object.keys(aliveTargets).forEach((rowIdx: any) => {
-    aliveTargets[rowIdx].forEach((colIdx) => {
-      const surroundings = [
-        [+rowIdx - 1, colIdx - 1],
-        [+rowIdx - 1, colIdx],
-        [+rowIdx - 1, colIdx + 1],
-        [+rowIdx, colIdx - 1],
-        [+rowIdx, colIdx + 1],
-        [+rowIdx + 1, colIdx - 1],
-        [+rowIdx + 1, colIdx],
-        [+rowIdx + 1, colIdx + 1],
-      ]
-
-      surroundings.forEach(([r, c]) => {
-        const value = currentState[r]?.[c]
-        if (typeof value === 'undefined' || value) return
-        if (!deadTargets[r]) return (deadTargets[r] = new Set([c]))
-        return deadTargets[r].add(c)
+  for (const rowIdx in population) {
+    for (const colIdx in population[rowIdx]) {
+      getSurroundingPoints(+rowIdx, +colIdx).forEach(([row, col]) => {
+        if (outOfBound(row, col)) return
+        if (population[row]?.[col]) return
+        if (!surroundingSpaces[row]) surroundingSpaces[row] = { [col]: true }
+        else surroundingSpaces[row][col] = true
       })
-    })
-  })
+    }
+  }
 
-  // new alive targets to save in currentState
-  const newTargets: { [rowIdx: number]: { [colIdx: number]: boolean } } = {}
-
-  // update living cell targets
-  Object.keys(aliveTargets).forEach((rowIdx: any) => {
-    aliveTargets[rowIdx].forEach((colIdx) => {
+  // determine surrounding spaces whether they should populate
+  for (const rowIdx in surroundingSpaces) {
+    for (const colIdx in surroundingSpaces[rowIdx]) {
       let neighbors = 0
-      const surroundings = [
-        [+rowIdx - 1, colIdx - 1],
-        [+rowIdx - 1, colIdx],
-        [+rowIdx - 1, colIdx + 1],
-        [+rowIdx, colIdx - 1],
-        [+rowIdx, colIdx + 1],
-        [+rowIdx + 1, colIdx - 1],
-        [+rowIdx + 1, colIdx],
-        [+rowIdx + 1, colIdx + 1],
-      ]
 
-      surroundings.forEach(([r, c]) => {
-        const value = currentState[r]?.[c]
-        if (typeof value === 'undefined' || !value) return
-        neighbors++
+      getSurroundingPoints(+rowIdx, +colIdx).forEach(([row, col]) => {
+        if (outOfBound(row, col)) return
+        if (population[row]?.[col]) neighbors++
       })
 
-      const newState = cellEvaluator(currentState[rowIdx][colIdx], neighbors)
+      if (!rule(false, neighbors)) continue
 
-      if (!newTargets[rowIdx])
-        return (newTargets[rowIdx] = { [colIdx]: newState })
-      return (newTargets[rowIdx][colIdx] = newState)
-    })
-  })
+      if (!nextGen[rowIdx]) nextGen[rowIdx] = { [colIdx]: true }
+      else nextGen[rowIdx][colIdx] = true
+    }
+  }
 
-  // update dead cell targets
-  Object.keys(deadTargets).forEach((rowIdx: any) => {
-    deadTargets[rowIdx].forEach((colIdx) => {
+  // determine whether existing population should survives
+  for (const rowIdx in population) {
+    for (const colIdx in population[rowIdx]) {
       let neighbors = 0
-      const surroundings = [
-        [+rowIdx - 1, colIdx - 1],
-        [+rowIdx - 1, colIdx],
-        [+rowIdx - 1, colIdx + 1],
-        [+rowIdx, colIdx - 1],
-        [+rowIdx, colIdx + 1],
-        [+rowIdx + 1, colIdx - 1],
-        [+rowIdx + 1, colIdx],
-        [+rowIdx + 1, colIdx + 1],
-      ]
 
-      surroundings.forEach(([r, c]) => {
-        const value = currentState[r]?.[c]
-        if (typeof value === 'undefined' || !value) return
-        neighbors++
+      getSurroundingPoints(+rowIdx, +colIdx).forEach(([row, col]) => {
+        if (outOfBound(row, col)) return
+        if (population[row]?.[col]) neighbors++
       })
 
-      const newState = cellEvaluator(currentState[rowIdx][colIdx], neighbors)
+      if (!rule(true, neighbors)) continue
 
-      if (!newTargets[rowIdx])
-        return (newTargets[rowIdx] = { [colIdx]: newState })
-      return (newTargets[rowIdx][colIdx] = newState)
-    })
-  })
+      if (!nextGen[rowIdx]) nextGen[rowIdx] = { [colIdx]: true }
+      else nextGen[rowIdx][colIdx] = true
+    }
+  }
 
-  Object.keys(newTargets).forEach((row: any) => {
-    Object.keys(newTargets[row]).forEach((col: any) => {
-      currentState[row][col] = newTargets[row][col]
-    })
-  })
+  return {
+    grid,
+    population: nextGen,
+  }
 
-  return currentState
+  function getSurroundingPoints(row: number, col: number) {
+    return [
+      [row - 1, col - 1],
+      [row - 1, col],
+      [row - 1, col + 1],
+      [row, col - 1],
+      [row, col + 1],
+      [row + 1, col - 1],
+      [row + 1, col],
+      [row + 1, col + 1],
+    ]
+  }
+
+  function outOfBound(row: number, col: number) {
+    return row < 0 || row >= grid.rows || col < 0 || col >= grid.cols
+  }
 }
