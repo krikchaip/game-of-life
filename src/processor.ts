@@ -91,8 +91,7 @@ export function nextGeneration(
       getSurroundingPoints(+rowIdx, +colIdx).forEach(([row, col]) => {
         if (outOfBound(row, col)) return
         if (population[row]?.[col]) return
-        if (!surroundingSpaces[row]) surroundingSpaces[row] = { [col]: true }
-        else surroundingSpaces[row][col] = true
+        addCoordinate(surroundingSpaces, row.toString(), col.toString())
       })
     }
   }
@@ -109,8 +108,7 @@ export function nextGeneration(
 
       if (!rule(false, neighbors)) continue
 
-      if (!nextGen[rowIdx]) nextGen[rowIdx] = { [colIdx]: true }
-      else nextGen[rowIdx][colIdx] = true
+      addCoordinate(nextGen, rowIdx, colIdx)
     }
   }
 
@@ -126,8 +124,7 @@ export function nextGeneration(
 
       if (!rule(true, neighbors)) continue
 
-      if (!nextGen[rowIdx]) nextGen[rowIdx] = { [colIdx]: true }
-      else nextGen[rowIdx][colIdx] = true
+      addCoordinate(nextGen, rowIdx, colIdx)
     }
   }
 
@@ -151,5 +148,10 @@ export function nextGeneration(
 
   function outOfBound(row: number, col: number) {
     return row < 0 || row >= grid.rows || col < 0 || col >= grid.cols
+  }
+
+  function addCoordinate(coordinates: Coordinates, row: string, col: string) {
+    if (!coordinates[row]) coordinates[row] = { [col]: true }
+    else coordinates[row][col] = true
   }
 }
