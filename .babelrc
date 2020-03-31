@@ -15,6 +15,12 @@
           "~": "./src"
         }
       }
+    ],
+    [
+      "styled-components",
+      {
+        "ssr": false
+      }
     ]
   ],
   "comments": false

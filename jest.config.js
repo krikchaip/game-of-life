@@ -8,7 +8,7 @@ module.exports = {
     '\\.css': 'identity-obj-proxy',
     '\\.(jpe?g|png)': '<rootDir>/test/assets-mock',
   },
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  setupFilesAfterEnv: ['@testing-library/jest-dom', 'jest-styled-components'],
   collectCoverageFrom: ['<rootDir>/{lib,src}/**/*.{ts,tsx}'],
   watchPlugins: [
     'jest-watch-typeahead/filename',
