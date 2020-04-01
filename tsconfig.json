@@ -3,6 +3,7 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "skipLibCheck": true,
     "allowJs": false,
     "target": "ESNext",
