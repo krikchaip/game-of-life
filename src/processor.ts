@@ -77,6 +77,18 @@ export function parse(text: string) {
   }
 }
 
+export function entries(coordinates: Coordinates) {
+  const results = []
+
+  for (const rowIdx in coordinates) {
+    for (const colIdx in coordinates[rowIdx]) {
+      results.push([+rowIdx, +colIdx])
+    }
+  }
+
+  return results
+}
+
 export function nextGeneration(
   currentState: GameState,
   rule: GameRule

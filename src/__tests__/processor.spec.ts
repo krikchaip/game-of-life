@@ -142,6 +142,28 @@ describe('parse', () => {
   })
 })
 
+describe('entries', () => {
+  it('convert coordinates into array of positions', () => {
+    const coordinates: processor.Coordinates = {
+      '1': {
+        '1': true,
+        '2': true,
+      },
+      '2': {
+        '1': true,
+        '2': true,
+      },
+    }
+
+    expect(processor.entries(coordinates)).toEqual([
+      [1, 1],
+      [1, 2],
+      [2, 1],
+      [2, 2],
+    ])
+  })
+})
+
 describe('next generation (classic)', () => {
   describe('still lifes', () => {
     it('block', () => {
