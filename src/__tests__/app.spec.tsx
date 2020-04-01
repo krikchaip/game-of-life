@@ -1,8 +1,8 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { axe } from 'jest-axe'
-import { noop } from '@lib/utils'
 
+import { noop } from '@lib/utils'
 import App from '../app'
 
 it('render successfully', () => {
