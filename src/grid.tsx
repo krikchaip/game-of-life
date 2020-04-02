@@ -28,7 +28,7 @@ const Root = styled.div<RootProps>`
   display: grid;
   grid-template-rows: repeat(${props('rows')}, 2vw);
   grid-template-columns: repeat(${props('cols')}, 2vw);
-  grid-gap: 1px;
+  grid-gap: 0.0625rem;
 
   border: thin solid black;
 `
@@ -36,7 +36,7 @@ const Root = styled.div<RootProps>`
 const Cell = styled.div`
   text-align: center;
   background-color: lightgreen;
-  box-shadow: 0 0 0 1px black;
+  box-shadow: 0 0 0 0.0625rem black;
 `
 
 export default Grid
