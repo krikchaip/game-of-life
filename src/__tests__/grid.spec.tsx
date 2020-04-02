@@ -55,3 +55,25 @@ it('render cells which #cells <= #rows * #cols', () => {
   expect(root.children).toHaveLength(marks.length)
   expect(root.children.length).toBeLessThanOrEqual(grid.rows * grid.cols)
 })
+
+it('place cells on its position', () => {
+  const { grid, population } = stateBuilder()
+  const marks = entries(population)
+  const { getByTestId } = render(
+    <Grid rows={grid.rows} cols={grid.cols} marks={marks} />
+  )
+
+  const root = getByTestId('grid-root')
+  let child = root.firstElementChild
+
+  expect(child).toHaveStyle({
+    gridRow: marks[0][0] + 1,
+    gridColumn: marks[0][1] + 1
+  })
+
+  child = root.lastElementChild
+  expect(child).toHaveStyle({
+    gridRow: marks[marks.length - 1][0] + 1,
+    gridColumn: marks[marks.length - 1][1] + 1
+  })
+})
