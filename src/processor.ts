@@ -50,10 +50,10 @@ export function parse(text: string) {
   const grid = text
     .trim()
     .split(/\s{2,}/)
-    .map((row) => row.split(' '))
+    .map(row => row.split(' '))
 
   const rows = grid.length
-  const cols = grid.map((row) => row.length).sort()[0]
+  const cols = grid.map(row => row.length).sort()[0]
 
   return {
     grid: { rows, cols },
@@ -73,7 +73,7 @@ export function parse(text: string) {
         }
       }
       return acc
-    }, {} as Coordinates),
+    }, {} as Coordinates)
   }
 }
 
@@ -142,7 +142,7 @@ export function nextGeneration(
 
   return {
     grid,
-    population: nextGen,
+    population: nextGen
   }
 
   function getSurroundingPoints(row: number, col: number) {
@@ -154,7 +154,7 @@ export function nextGeneration(
       [row, col + 1],
       [row + 1, col - 1],
       [row + 1, col],
-      [row + 1, col + 1],
+      [row + 1, col + 1]
     ]
   }
 

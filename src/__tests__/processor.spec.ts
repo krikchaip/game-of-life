@@ -37,13 +37,13 @@ describe('stringify', () => {
       population: {
         '1': {
           '1': true,
-          '2': true,
+          '2': true
         },
         '2': {
           '1': true,
-          '2': true,
-        },
-      },
+          '2': true
+        }
+      }
     }
 
     expect(processor.stringify(gameState)).toMatchInlineSnapshot(`
@@ -58,16 +58,16 @@ describe('stringify', () => {
     gameState.population = {
       '0': {
         '1': true,
-        '2': true,
+        '2': true
       },
       '1': {
         '0': true,
-        '3': true,
+        '3': true
       },
       '2': {
         '1': true,
-        '2': true,
-      },
+        '2': true
+      }
     }
 
     expect(processor.stringify(gameState)).toMatchInlineSnapshot(`
@@ -95,13 +95,13 @@ describe('parse', () => {
       population: {
         '1': {
           '1': true,
-          '2': true,
+          '2': true
         },
         '2': {
           '1': true,
-          '2': true,
-        },
-      },
+          '2': true
+        }
+      }
     })
 
     text = `
@@ -115,17 +115,17 @@ describe('parse', () => {
       population: {
         '0': {
           '1': true,
-          '2': true,
+          '2': true
         },
         '1': {
           '0': true,
-          '3': true,
+          '3': true
         },
         '2': {
           '1': true,
-          '2': true,
-        },
-      },
+          '2': true
+        }
+      }
     })
   })
 
@@ -147,19 +147,19 @@ describe('entries', () => {
     const coordinates: processor.Coordinates = {
       '1': {
         '1': true,
-        '2': true,
+        '2': true
       },
       '2': {
         '1': true,
-        '2': true,
-      },
+        '2': true
+      }
     }
 
     expect(processor.entries(coordinates)).toEqual([
       [1, 1],
       [1, 2],
       [2, 1],
-      [2, 2],
+      [2, 2]
     ])
   })
 })

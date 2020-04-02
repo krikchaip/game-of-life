@@ -10,13 +10,13 @@ function App() {
     population: {
       '1': {
         '1': true,
-        '2': true,
+        '2': true
       },
       '2': {
         '1': true,
-        '2': true,
-      },
-    },
+        '2': true
+      }
+    }
   }
   return (
     <Scene>
