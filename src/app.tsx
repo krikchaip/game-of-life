@@ -57,6 +57,11 @@ function App(props: Props) {
     }))
   }
 
+  function handleStopAutoplay() {
+    clearInterval(autoplay.interval)
+    setAutoplay(autoplay => ({ active: !autoplay.active }))
+  }
+
   return (
     <Scene>
       <Grid
@@ -66,7 +71,9 @@ function App(props: Props) {
       />
       <Actions>
         <Button onClick={handleNextGeneration}>next</Button>
-        <Button onClick={handleAutoplay}>play</Button>
+        <Button onClick={autoplay.active ? handleStopAutoplay : handleAutoplay}>
+          {autoplay.active ? 'stop' : 'play'}
+        </Button>
       </Actions>
     </Scene>
   )
