@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
 import * as processor from './processor'
@@ -6,7 +6,11 @@ import Grid from './grid'
 
 type Props = {
   initialState?: processor.GameState
+  config?: Config
 }
+
+type Config = { speed?: number }
+type Autoplay = { active: boolean; interval?: number }
 
 function App(props: Props) {
   const {
@@ -25,24 +29,45 @@ function App(props: Props) {
           '3': true
         }
       }
-    }
+    },
+    config = { speed: 500 }
   } = props
+
   const [state, setState] = useState(initialState)
+  const [autoplay, setAutoplay] = useState<Autoplay>({ active: false })
+
+  useEffect(() => {
+    return () => {
+      clearInterval(autoplay.interval)
+    }
+  }, [autoplay])
 
   function handleNextGeneration() {
-    setState(processor.nextGeneration(state, processor.classicRule))
+    setState(state => processor.nextGeneration(state, processor.classicRule))
+  }
+
+  function handleAutoplay() {
+    const intervalId = setInterval(() => {
+      setState(state => processor.nextGeneration(state, processor.classicRule))
+    }, config.speed)
+
+    setAutoplay(autoplay => ({
+      active: !autoplay.active,
+      interval: intervalId
+    }))
   }
 
   return (
     <Scene>
-      <Actions>
-        <Button onClick={handleNextGeneration}>next</Button>
-      </Actions>
       <Grid
         rows={state.grid.rows}
         cols={state.grid.cols}
         marks={processor.entries(state.population)}
       />
+      <Actions>
+        <Button onClick={handleNextGeneration}>next</Button>
+        <Button onClick={handleAutoplay}>play</Button>
+      </Actions>
     </Scene>
   )
 }
@@ -60,7 +85,12 @@ const Scene = styled.div`
 `
 
 const Actions = styled.div`
-  margin-bottom: 1rem;
+  margin-top: 1rem;
+  display: flex;
+
+  > :not(:last-child) {
+    margin-right: 1rem;
+  }
 `
 
 const Button = styled.button`

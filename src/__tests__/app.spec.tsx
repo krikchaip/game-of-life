@@ -1,6 +1,6 @@
 import React from 'react'
 import user from '@testing-library/user-event'
-import { render } from '@testing-library/react'
+import { render, act } from '@testing-library/react'
 import { axe } from 'jest-axe'
 
 import { noop } from '@lib/utils'
@@ -24,14 +24,31 @@ it('no axe violations', async () => {
 })
 
 describe('game', () => {
-  it('next generation', () => {
-    const spy = jest.spyOn(processor, 'nextGeneration')
-    const state = processor.parse(`
-      x x x x x
-      x o o o x
-      x x x x x
-    `)
+  const state = processor.parse(`
+    x x x x x
+    x o o o x
+    x x x x x
+  `)
+  const nextState = processor.parse(`
+    x x o x x
+    x x o x x
+    x x o x x
+  `)
 
+  beforeEach(() => {
+    jest.spyOn(processor, 'nextGeneration')
+    jest.spyOn(console, 'error')
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    jest.restoreAllMocks()
+  })
+
+  it('next generation', () => {
     const { getByText, getByTestId } = render(<App initialState={state} />)
     const next = getByText(/next/i)
     const grid = getByTestId('grid-root')
@@ -50,7 +67,54 @@ describe('game', () => {
         "grid-row: 3; grid-column: 3;",
       ]
     `)
+  })
 
-    spy.mockRestore()
+  it('autoplay', () => {
+    jest.useFakeTimers()
+
+    const config = { speed: 1000 }
+    const { getByText, getByTestId, unmount } = render(
+      <App initialState={state} config={config} />
+    )
+
+    const play = getByText(/play/i)
+    const grid = getByTestId('grid-root')
+
+    user.click(play)
+
+    expect(processor.nextGeneration).not.toBeCalled()
+
+    act(() => void jest.advanceTimersByTime(1000))
+    expect(processor.nextGeneration).toBeCalledTimes(1)
+    expect(processor.nextGeneration).toBeCalledWith(state, expect.any(Function))
+    expect([...grid.children].map(c => c.getAttribute('style')))
+      .toMatchInlineSnapshot(`
+      Array [
+        "grid-row: 1; grid-column: 3;",
+        "grid-row: 2; grid-column: 3;",
+        "grid-row: 3; grid-column: 3;",
+      ]
+    `)
+
+    act(() => void jest.advanceTimersByTime(1000))
+    expect(processor.nextGeneration).toBeCalledTimes(2)
+    expect(processor.nextGeneration).toBeCalledWith(
+      nextState,
+      expect.any(Function)
+    )
+    expect([...grid.children].map(c => c.getAttribute('style')))
+      .toMatchInlineSnapshot(`
+      Array [
+        "grid-row: 2; grid-column: 2;",
+        "grid-row: 2; grid-column: 3;",
+        "grid-row: 2; grid-column: 4;",
+      ]
+    `)
+
+    unmount()
+    act(() => void jest.runOnlyPendingTimers())
+    expect(console.error).not.toBeCalled()
+
+    jest.useRealTimers()
   })
 })
