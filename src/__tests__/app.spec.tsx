@@ -29,26 +29,14 @@ describe('game', () => {
     x o o o x
     x x x x x
   `)
-  const nextState = processor.parse(`
-    x x o x x
-    x x o x x
-    x x o x x
-  `)
-
-  beforeEach(() => {
-    jest.spyOn(processor, 'nextGeneration')
-    jest.spyOn(console, 'error')
-  })
 
   afterEach(() => {
-    jest.clearAllMocks()
-  })
-
-  afterAll(() => {
     jest.restoreAllMocks()
   })
 
   it('next generation', () => {
+    jest.spyOn(processor, 'nextGeneration')
+
     const { getByText, getByTestId } = render(<App initialState={state} />)
     const next = getByText(/next/i)
     const grid = getByTestId('grid-root')
@@ -61,16 +49,21 @@ describe('game', () => {
     expect(processor.nextGeneration).toBeCalledWith(state, expect.any(Function))
     expect([...grid.children].map(c => c.getAttribute('style')))
       .toMatchInlineSnapshot(`
-      Array [
-        "grid-row: 1; grid-column: 3;",
-        "grid-row: 2; grid-column: 3;",
-        "grid-row: 3; grid-column: 3;",
-      ]
-    `)
+        Array [
+          "grid-row: 1; grid-column: 3;",
+          "grid-row: 2; grid-column: 3;",
+          "grid-row: 3; grid-column: 3;",
+        ]
+      `)
   })
 
   describe('autoplay', () => {
     const config = { speed: 1000 }
+    const nextState = processor.parse(`
+      x x o x x
+      x x o x x
+      x x o x x
+    `)
 
     beforeEach(() => {
       jest.useFakeTimers()
@@ -81,6 +74,9 @@ describe('game', () => {
     })
 
     it('start', () => {
+      jest.spyOn(processor, 'nextGeneration')
+      jest.spyOn(console, 'error')
+
       const { getByText, getByTestId, unmount } = render(
         <App initialState={state} config={config} />
       )
@@ -100,12 +96,12 @@ describe('game', () => {
       )
       expect([...grid.children].map(c => c.getAttribute('style')))
         .toMatchInlineSnapshot(`
-      Array [
-        "grid-row: 1; grid-column: 3;",
-        "grid-row: 2; grid-column: 3;",
-        "grid-row: 3; grid-column: 3;",
-      ]
-    `)
+          Array [
+            "grid-row: 1; grid-column: 3;",
+            "grid-row: 2; grid-column: 3;",
+            "grid-row: 3; grid-column: 3;",
+          ]
+        `)
 
       act(() => void jest.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(2)
@@ -115,12 +111,12 @@ describe('game', () => {
       )
       expect([...grid.children].map(c => c.getAttribute('style')))
         .toMatchInlineSnapshot(`
-      Array [
-        "grid-row: 2; grid-column: 2;",
-        "grid-row: 2; grid-column: 3;",
-        "grid-row: 2; grid-column: 4;",
-      ]
-    `)
+          Array [
+            "grid-row: 2; grid-column: 2;",
+            "grid-row: 2; grid-column: 3;",
+            "grid-row: 2; grid-column: 4;",
+          ]
+        `)
 
       unmount()
       act(() => void jest.runOnlyPendingTimers())
@@ -128,6 +124,8 @@ describe('game', () => {
     })
 
     it('stop', () => {
+      jest.spyOn(processor, 'nextGeneration')
+
       const { getByText } = render(<App initialState={state} config={config} />)
       const play = getByText(/play/i)
       const timerCountBefore = jest.getTimerCount()
@@ -147,5 +145,33 @@ describe('game', () => {
       jest.runOnlyPendingTimers()
       expect(processor.nextGeneration).not.toBeCalledTimes(3)
     })
+  })
+
+  it('random', () => {
+    jest.spyOn(processor, 'seed').mockReturnValue(
+      processor.parse(`
+        x x x x
+        x o x o
+        o x o o
+      `)
+    )
+
+    const { getByText, getByTestId } = render(<App initialState={state} />)
+    const random = getByText(/seed/i)
+    const grid = getByTestId('grid-root')
+
+    user.click(random)
+
+    expect(processor.seed).toBeCalledWith(state.grid.rows, state.grid.cols)
+    expect([...grid.children].map(c => c.getAttribute('style')))
+      .toMatchInlineSnapshot(`
+        Array [
+          "grid-row: 2; grid-column: 2;",
+          "grid-row: 2; grid-column: 4;",
+          "grid-row: 3; grid-column: 1;",
+          "grid-row: 3; grid-column: 3;",
+          "grid-row: 3; grid-column: 4;",
+        ]
+      `)
   })
 })

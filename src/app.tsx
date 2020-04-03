@@ -62,6 +62,10 @@ function App(props: Props) {
     setAutoplay(autoplay => ({ active: !autoplay.active }))
   }
 
+  function handleRandom() {
+    setState(state => processor.seed(state.grid.rows, state.grid.cols))
+  }
+
   return (
     <Scene>
       <Grid
@@ -74,6 +78,7 @@ function App(props: Props) {
         <Button onClick={autoplay.active ? handleStopAutoplay : handleAutoplay}>
           {autoplay.active ? 'stop' : 'play'}
         </Button>
+        <Button onClick={handleRandom}>seed</Button>
       </Actions>
     </Scene>
   )
