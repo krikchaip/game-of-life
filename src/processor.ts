@@ -89,6 +89,22 @@ export function entries(coordinates: Coordinates) {
   return results
 }
 
+export function seed(rows: number, cols: number): GameState {
+  const population: Coordinates = {}
+
+  for (let r = 0; r < rows; r++)
+    for (let c = 0; c < cols; c++) {
+      if (1 - Math.random() >= 0.3) continue
+      if (!population[r]) population[r] = { [c]: true }
+      else population[r][c] = true
+    }
+
+  return {
+    grid: { rows, cols },
+    population
+  }
+}
+
 export function nextGeneration(
   currentState: GameState,
   rule: GameRule

@@ -1,3 +1,5 @@
+import { minimum, maximum } from '@lib/utils'
+
 import * as processor from '../processor'
 
 describe('game rule (classic)', () => {
@@ -161,6 +163,68 @@ describe('entries', () => {
       [2, 1],
       [2, 2]
     ])
+  })
+})
+
+describe('seed', () => {
+  const grid = { rows: 2, cols: 3 }
+
+  it('population coordinates must be a number', () => {
+    const result = processor.seed(grid.rows, grid.cols)
+
+    const rowIndices = Object.keys(result.population)
+    const colIndices = rowIndices.flatMap(r =>
+      Object.keys(result.population[r])
+    )
+
+    expect(rowIndices).toContainEqual(expect.stringMatching(/\d+/))
+    expect(colIndices).toContainEqual(expect.stringMatching(/\d+/))
+  })
+
+  it('all generated coordinates lies within the grid', () => {
+    const result = processor.seed(grid.rows, grid.cols)
+
+    const rowIndices = Object.keys(result.population)
+    const colIndices = rowIndices.flatMap(r =>
+      Object.keys(result.population[r])
+    )
+
+    const [minRow, maxRow] = [minimum, maximum].map(f =>
+      f(rowIndices.map(r => +r))
+    )
+    const [minCol, maxCol] = [minimum, maximum].map(f =>
+      f(colIndices.map(c => +c))
+    )
+
+    expect(minRow).toBeGreaterThanOrEqual(0)
+    expect(minCol).toBeGreaterThanOrEqual(0)
+
+    expect(maxRow).toBeLessThan(grid.rows)
+    expect(maxCol).toBeLessThan(grid.cols)
+  })
+
+  it('generated population must not exceed given spaces', () => {
+    // chance of being populated
+    const spy = jest.spyOn(Math, 'random')
+
+    let result = processor.seed(grid.rows, grid.cols)
+    const total = (rs: typeof result) =>
+      Object.keys(rs.population).reduce((p, row) => {
+        return p + Object.keys(rs.population[row]).length
+      }, 0)
+
+    expect(result.grid).toEqual(grid)
+    expect(total(result)).toBeLessThanOrEqual(grid.rows * grid.cols)
+
+    spy.mockReturnValue(1)
+    result = processor.seed(grid.rows, grid.cols)
+    expect(total(result)).toBe(grid.rows * grid.cols)
+
+    spy.mockReturnValue(0)
+    result = processor.seed(grid.rows, grid.cols)
+    expect(total(result)).toBe(0)
+
+    spy.mockRestore()
   })
 })
 
