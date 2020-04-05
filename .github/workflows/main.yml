@@ -21,10 +21,12 @@ jobs:
         id: cache-dir
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - name: cache dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@master
         id: cache
         with:
-          path: ${{ steps.cache-dir.outputs.dir }}
+          path: |
+            node_modules
+            ${{ steps.cache-dir.outputs.dir }}
           key: ${{ hashFiles('**/yarn.lock') }}
       - name: install packages
         run: yarn --frozen-lockfile
