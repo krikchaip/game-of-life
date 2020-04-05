@@ -169,6 +169,12 @@ describe('entries', () => {
 describe('seed', () => {
   const grid = { rows: 2, cols: 3 }
 
+  let random: jest.SpyInstance<number, []>
+
+  beforeEach(() => {
+    random = jest.spyOn(Math, 'random').mockReturnValue(1)
+  })
+
   it('population coordinates must be a number', () => {
     const result = processor.seed(grid.rows, grid.cols)
 
@@ -204,9 +210,6 @@ describe('seed', () => {
   })
 
   it('generated population must not exceed given spaces', () => {
-    // chance of being populated
-    const spy = jest.spyOn(Math, 'random')
-
     let result = processor.seed(grid.rows, grid.cols)
     const total = (rs: typeof result) =>
       Object.keys(rs.population).reduce((p, row) => {
@@ -216,15 +219,13 @@ describe('seed', () => {
     expect(result.grid).toEqual(grid)
     expect(total(result)).toBeLessThanOrEqual(grid.rows * grid.cols)
 
-    spy.mockReturnValue(1)
+    random.mockReturnValue(1)
     result = processor.seed(grid.rows, grid.cols)
     expect(total(result)).toBe(grid.rows * grid.cols)
 
-    spy.mockReturnValue(0)
+    random.mockReturnValue(0)
     result = processor.seed(grid.rows, grid.cols)
     expect(total(result)).toBe(0)
-
-    spy.mockRestore()
   })
 })
 
