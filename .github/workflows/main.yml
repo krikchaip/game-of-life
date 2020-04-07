@@ -10,6 +10,18 @@ jobs:
     steps:
       - name: checkout master branch
         uses: actions/checkout@v2
+
+      - name: set environment variables
+        env:
+          HASH: ${{ hashFiles('**/*.ts') }}-${{ hashFiles('**/*.tsx') }}
+        run: |
+          CACHE_DIR=$(yarn cache dir)
+          echo "CACHE_DIR: $CACHE_DIR"
+          echo "::set-env name=CACHE_DIR::$CACHE_DIR"
+
+          echo "HASH: $HASH"
+          echo "::set-env name=HASH::$HASH"
+
       - name: setup nodejs
         uses: actions/setup-node@v1.1.0
         with:
@@ -19,30 +31,28 @@ jobs:
           echo "nodejs: $(node -v)"
           echo "yarn: $(yarn -v)"
 
-      - name: get cache directory
-        id: cache-dir
-        run: echo "::set-output name=path::$(yarn cache dir)"
       - name: cache dependencies
         uses: actions/cache@master
-        id: cache
         with:
           path: |
+            ${{ env.CACHE_DIR }}
             node_modules
-            ${{ steps.cache-dir.outputs.path }}
-          key: cache-${{ hashFiles('**/yarn.lock') }}
+            parcel
+          key: cache-${{ hashFiles('**/yarn.lock') }}-${{ env.HASH }}
+          restore-keys: |
+            cache-${{ hashFiles('**/yarn.lock') }}-
+            cache-
+
       - name: install packages
         run: yarn --frozen-lockfile
 
       - name: run validate commands
         run: yarn validate
 
-      - name: cache build artifacts
-        uses: actions/cache@master
-        with:
-          path: .cache
-          key: build-${{ hashFiles('**.tsx?') }}
+      # the default .cache directory is somehow conflicted with actions/cache internal,
+      # so we have to change a cache directory to something else.
       - name: build the project
-        run: yarn build
+        run: yarn build --cache-dir parcel
 
       - name: publish to Github Pages
         uses: crazy-max/ghaction-github-pages@v1
