@@ -9,7 +9,7 @@
     "prestart": "rm -rf .cache",
     "prebuild": "rm -rf dist",
     "start": "parcel public/index.html -p 3000",
-    "build": "parcel build public/index.html --experimental-scope-hoisting",
+    "build": "parcel build public/index.html --public-url ./ --experimental-scope-hoisting",
     "test": "jest --watch",
     "coverage": "jest --coverage && open ./coverage/lcov-report/index.html",
     "format": "prettier --ignore-path .gitignore --write \"{lib,src,test}/**/*.{ts,tsx}\"",
