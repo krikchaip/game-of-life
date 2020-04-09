@@ -15,20 +15,8 @@ type Autoplay = { active: boolean; interval?: number }
 function App(props: Props) {
   const {
     initialState = {
-      grid: { cols: 20, rows: 20 },
-      population: {
-        '1': {
-          '2': true
-        },
-        '2': {
-          '3': true
-        },
-        '3': {
-          '1': true,
-          '2': true,
-          '3': true
-        }
-      }
+      grid: { cols: 40, rows: 40 },
+      population: {}
     },
     config = { speed: 500 }
   } = props

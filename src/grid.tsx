@@ -26,8 +26,8 @@ function Grid(props: Props) {
 type RootProps = { rows: number; cols: number }
 const Root = styled.div<RootProps>`
   display: grid;
-  grid-template-rows: repeat(${props('rows')}, 2vw);
-  grid-template-columns: repeat(${props('cols')}, 2vw);
+  grid-template-rows: repeat(${props('rows')}, 1vw);
+  grid-template-columns: repeat(${props('cols')}, 1vw);
   grid-gap: 0.0625rem;
 
   border: thin solid black;
