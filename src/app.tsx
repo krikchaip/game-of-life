@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 import * as processor from './processor'
 import Grid from './grid'
+import Speed from './speed'
 
 type Props = {
   initialState?: processor.GameState
@@ -68,7 +69,7 @@ function App(props: Props) {
         <Button onClick={autoplay.active ? handleStopAutoplay : handleAutoplay}>
           {autoplay.active ? 'stop' : 'play'}
         </Button>
-        <Button onClick={handleRandom}>seed</Button>
+        <Speed aria-label="speed" />
       </Actions>
     </Scene>
   )

@@ -174,4 +174,9 @@ describe('game', () => {
         ]
       `)
   })
+
+  it('select speed', () => {
+    const { getByLabelText } = render(<App initialState={state} />)
+    getByLabelText(/speed/i)
+  })
 })
