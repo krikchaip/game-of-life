@@ -30,9 +30,12 @@
     "@typescript-eslint/no-use-before-define": [
       "warn",
       {
-        "functions": false
+        "functions": false,
+        "typedefs": false,
+        "variables": false
       }
-    ]
+    ],
+    "@typescript-eslint/no-non-null-assertion": "off"
   },
   "settings": {
     "react": {

@@ -18,10 +18,11 @@ function App(props: Props) {
       grid: { cols: 40, rows: 40 },
       population: {}
     },
-    config = { speed: 500 }
+    config: initialConfig = { speed: 500 }
   } = props
 
   const [state, setState] = useState(initialState)
+  const [config, setConfig] = useState(initialConfig)
   const [autoplay, setAutoplay] = useState<Autoplay>({ active: false })
 
   useEffect(() => {
@@ -62,6 +63,7 @@ function App(props: Props) {
         marks={processor.entries(state.population)}
       />
       <Actions>
+        <Button onClick={handleRandom}>seed</Button>
         <Button onClick={handleNextGeneration}>next</Button>
         <Button onClick={autoplay.active ? handleStopAutoplay : handleAutoplay}>
           {autoplay.active ? 'stop' : 'play'}
@@ -86,7 +88,9 @@ const Scene = styled.div`
 
 const Actions = styled.div`
   margin-top: 1rem;
+
   display: flex;
+  align-items: center;
 
   > :not(:last-child) {
     margin-right: 1rem;
