@@ -1,11 +1,12 @@
 import React from 'react'
 import user from '@testing-library/user-event'
-import { render, act } from '@testing-library/react'
+import { render, act, fireEvent } from '@testing-library/react'
 import { axe } from 'jest-axe'
 
 import { noop } from '@lib/utils'
 import * as processor from '../processor'
 import App from '../app'
+import { OPTION } from '../speed'
 
 it('render successfully', () => {
   const spy = jest.spyOn(console, 'error').mockImplementation(noop)
@@ -175,8 +176,108 @@ describe('game', () => {
       `)
   })
 
-  it('select speed', () => {
-    const { getByLabelText } = render(<App initialState={state} />)
-    getByLabelText(/speed/i)
+  describe('select speed', () => {
+    const config = { speed: 1000 }
+
+    beforeAll(() => {
+      jest.useFakeTimers()
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+    })
+
+    afterEach(() => {
+      jest.clearAllTimers()
+    })
+
+    it('slow   = config * 2', () => {
+      jest.spyOn(processor, 'nextGeneration')
+
+      const { getByLabelText, getByText } = render(
+        <App initialState={state} config={config} />
+      )
+
+      const selectSpeed = getByLabelText(/select-speed/i)
+      const play = getByText(/play/i)
+
+      fireEvent.change(selectSpeed, { target: { value: OPTION.SLOW } })
+      user.click(play)
+
+      expect(processor.nextGeneration).not.toBeCalled()
+
+      act(() => void jest.advanceTimersByTime(config.speed * 2))
+      expect(processor.nextGeneration).toBeCalledTimes(1)
+
+      act(() => void jest.advanceTimersByTime(config.speed))
+      expect(processor.nextGeneration).toBeCalledTimes(1)
+
+      act(() => void jest.advanceTimersByTime(config.speed))
+      expect(processor.nextGeneration).toBeCalledTimes(2)
+    })
+
+    it('medium = config', () => {
+      jest.spyOn(processor, 'nextGeneration')
+
+      const { getByLabelText, getByText } = render(
+        <App initialState={state} config={config} />
+      )
+
+      const selectSpeed = getByLabelText(/select-speed/i)
+      const play = getByText(/play/i)
+
+      fireEvent.change(selectSpeed, { target: { value: OPTION.MEDIUM } })
+      user.click(play)
+
+      expect(processor.nextGeneration).not.toBeCalled()
+
+      act(() => void jest.advanceTimersByTime(config.speed))
+      expect(processor.nextGeneration).toBeCalledTimes(1)
+    })
+
+    it('fast   = config / 2', () => {
+      jest.spyOn(processor, 'nextGeneration')
+
+      const { getByLabelText, getByText } = render(
+        <App initialState={state} config={config} />
+      )
+
+      const selectSpeed = getByLabelText(/select-speed/i)
+      const play = getByText(/play/i)
+
+      fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
+      user.click(play)
+
+      expect(processor.nextGeneration).not.toBeCalled()
+
+      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      expect(processor.nextGeneration).toBeCalledTimes(1)
+    })
+
+    it.only('while playing', () => {
+      jest.spyOn(processor, 'nextGeneration')
+
+      const { getByLabelText, getByText } = render(
+        <App initialState={state} config={config} />
+      )
+
+      const selectSpeed = getByLabelText(/select-speed/i)
+      const play = getByText(/play/i)
+
+      user.click(play)
+
+      expect(processor.nextGeneration).not.toBeCalled()
+
+      act(() => void jest.advanceTimersByTime(config.speed))
+      expect(processor.nextGeneration).toBeCalledTimes(1)
+
+      fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
+      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      expect(processor.nextGeneration).toBeCalledTimes(2)
+
+      fireEvent.change(selectSpeed, { target: { value: OPTION.SLOW } })
+      act(() => void jest.advanceTimersByTime(config.speed * 2))
+      expect(processor.nextGeneration).toBeCalledTimes(3)
+    })
   })
 })

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import * as processor from './processor'
 import Grid from './grid'
-import Speed from './speed'
+import Speed, { OPTION, Props as SpeedProps } from './speed'
 
 type Props = {
   initialState?: processor.GameState
@@ -13,17 +13,23 @@ type Props = {
 type Config = { speed?: number }
 type Autoplay = { active: boolean; interval?: number }
 
+const SPEED_MAP: Record<string, (n: number) => number> = {
+  [OPTION.SLOW]: n => n * 2,
+  [OPTION.MEDIUM]: n => n,
+  [OPTION.FAST]: n => n / 2
+}
+
 function App(props: Props) {
   const {
     initialState = {
       grid: { cols: 40, rows: 40 },
       population: {}
     },
-    config: initialConfig = { speed: 500 }
+    config = { speed: 500 }
   } = props
 
   const [state, setState] = useState(initialState)
-  const [config, setConfig] = useState(initialConfig)
+  const [speed, setSpeed] = useState<keyof typeof OPTION>('MEDIUM')
   const [autoplay, setAutoplay] = useState<Autoplay>({ active: false })
 
   useEffect(() => {
@@ -39,7 +45,7 @@ function App(props: Props) {
   function handleAutoplay() {
     const intervalId = setInterval(() => {
       setState(state => processor.nextGeneration(state, processor.classicRule))
-    }, config.speed)
+    }, SPEED_MAP[OPTION[speed]](config.speed!))
 
     setAutoplay(autoplay => ({
       active: !autoplay.active,
@@ -56,6 +62,22 @@ function App(props: Props) {
     setState(state => processor.seed(state.grid.rows, state.grid.cols))
   }
 
+  function handleSpeedChange(
+    value: Parameters<Exclude<SpeedProps['onChange'], undefined>>[0]
+  ) {
+    if (autoplay.active) {
+      clearInterval(autoplay.interval)
+      const intervalId = setInterval(() => {
+        setState(state =>
+          processor.nextGeneration(state, processor.classicRule)
+        )
+      }, SPEED_MAP[OPTION[value]](config.speed!))
+      setAutoplay(({ active }) => ({ active, interval: intervalId }))
+    }
+
+    setSpeed(value)
+  }
+
   return (
     <Scene>
       <Grid
@@ -69,7 +91,11 @@ function App(props: Props) {
         <Button onClick={autoplay.active ? handleStopAutoplay : handleAutoplay}>
           {autoplay.active ? 'stop' : 'play'}
         </Button>
-        <Speed aria-label="speed" />
+        <Speed
+          aria-label="select-speed"
+          value={speed}
+          onChange={handleSpeedChange}
+        />
       </Actions>
     </Scene>
   )

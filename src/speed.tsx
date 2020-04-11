@@ -1,8 +1,14 @@
-import React, { InputHTMLAttributes } from 'react'
+import React, { InputHTMLAttributes, ChangeEvent } from 'react'
 import styled from 'styled-components'
 
-type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> & {
-  value?: Values<typeof OPTION>
+export type Props = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  keyof OwnProps
+> &
+  OwnProps
+type OwnProps = {
+  value?: keyof typeof OPTION
+  onChange?: (value: Exclude<OwnProps['value'], undefined>) => unknown
 }
 
 export const OPTION = {
@@ -10,9 +16,20 @@ export const OPTION = {
   MEDIUM: 1,
   FAST: 2
 } as const
+export const STEP = 1
+
+function reverseOption() {
+  return Object.fromEntries(Object.entries(OPTION).map(([txt, n]) => [n, txt]))
+}
 
 function Speed(props: Props) {
-  const { value, ...otherProps } = props
+  const { value, onChange, ...otherProps } = props
+
+  async function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    const { value } = e.target
+    onChange && (await onChange(reverseOption()[value] as any))
+  }
+
   return (
     <Container>
       <Input
@@ -20,8 +37,9 @@ function Speed(props: Props) {
         type="range"
         min={OPTION.SLOW}
         max={OPTION.FAST}
-        step={1}
-        value={value}
+        step={STEP}
+        value={value ? OPTION[value] : undefined}
+        onChange={handleChange}
       />
       <Mark style={{ top: '-85%' }}>slow</Mark>
       <Mark style={{ top: '-85%', left: '50%', transform: 'translateX(-50%)' }}>
