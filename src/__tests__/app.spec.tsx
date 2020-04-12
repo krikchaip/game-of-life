@@ -254,7 +254,7 @@ describe('game', () => {
       expect(processor.nextGeneration).toBeCalledTimes(1)
     })
 
-    it.only('while playing', () => {
+    it('while playing', () => {
       jest.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
@@ -278,6 +278,61 @@ describe('game', () => {
       fireEvent.change(selectSpeed, { target: { value: OPTION.SLOW } })
       act(() => void jest.advanceTimersByTime(config.speed * 2))
       expect(processor.nextGeneration).toBeCalledTimes(3)
+    })
+  })
+
+  describe('generation update', () => {
+    it('from clicking next', () => {
+      const { getByText } = render(<App initialState={state} />)
+      const gen = getByText(/generation/i)
+      const next = getByText(/next/i)
+
+      expect(gen).toHaveTextContent(/generation(.*)1/i)
+
+      user.click(next)
+      expect(gen).toHaveTextContent(/generation(.*)2/i)
+
+      user.click(next)
+      expect(gen).toHaveTextContent(/generation(.*)3/i)
+    })
+
+    it('from autoplay', () => {
+      jest.useFakeTimers()
+
+      const config = { speed: 1000 }
+      const { getByText } = render(<App initialState={state} config={config} />)
+
+      const gen = getByText(/generation/i)
+      const play = getByText(/play/i)
+
+      expect(gen).toHaveTextContent(/generation(.*)1/i)
+
+      user.click(play)
+
+      act(() => void jest.advanceTimersByTime(config.speed))
+      expect(gen).toHaveTextContent(/generation(.*)2/i)
+
+      act(() => void jest.advanceTimersByTime(config.speed))
+      expect(gen).toHaveTextContent(/generation(.*)3/i)
+
+      jest.useRealTimers()
+    })
+
+    it('reset when seed', () => {
+      const { getByText } = render(<App />)
+
+      const gen = getByText(/generation/i)
+      const next = getByText(/next/i)
+      const seed = getByText(/seed/i)
+
+      expect(gen).toHaveTextContent(/generation(.*)1/i)
+
+      user.click(next)
+      user.click(next)
+      user.click(next)
+
+      user.click(seed)
+      expect(gen).toHaveTextContent(/generation(.*)1/i)
     })
   })
 })
