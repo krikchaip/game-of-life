@@ -315,6 +315,33 @@ describe('game', () => {
       act(() => void jest.advanceTimersByTime(config.speed))
       expect(gen).toHaveTextContent(/generation(.*)3/i)
 
+      jest.clearAllTimers()
+      jest.useRealTimers()
+    })
+
+    it('from changing speed during autoplay', () => {
+      jest.useFakeTimers()
+
+      const config = { speed: 1000 }
+      const { getByText, getByLabelText } = render(
+        <App initialState={state} config={config} />
+      )
+
+      const gen = getByText(/generation/i)
+      const play = getByText(/play/i)
+      const selectSpeed = getByLabelText(/select-speed/i)
+
+      user.click(play)
+
+      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void jest.advanceTimersByTime(config.speed))
+
+      fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
+
+      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      expect(gen).toHaveTextContent(/generation(.*)4/i)
+
+      jest.clearAllTimers()
       jest.useRealTimers()
     })
 

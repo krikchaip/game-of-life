@@ -75,6 +75,7 @@ function App(props: Props) {
         setState(state =>
           processor.nextGeneration(state, processor.classicRule)
         )
+        setGenerations(gen => gen + 1)
       }, SPEED_MAP[OPTION[value]](config.speed!))
       setAutoplay(({ active }) => ({ active, interval: intervalId }))
     }
