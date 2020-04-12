@@ -46,17 +46,28 @@ export function stringify(state: GameState) {
   return result
 }
 
-export function parse(text: string) {
+export type ParseOptions = { rows?: number; cols?: number }
+export function parse(text: string, option?: ParseOptions) {
   const grid = text
     .trim()
     .split(/\s{2,}/)
     .map(row => row.split(' '))
 
   const rows = grid.length
-  const cols = grid.map(row => row.length).sort()[0]
+  const cols = grid.map(row => row.length).sort()[0] // minimum
+
+  if (option?.rows && option.rows < rows)
+    throw new Error(
+      'option.rows must be greater or equal than the given text rows'
+    )
+
+  if (option?.cols && option.cols < cols)
+    throw new Error(
+      'option.cols must be greater or equal than the given text columns'
+    )
 
   return {
-    grid: { rows, cols },
+    grid: { rows: option?.rows ?? rows, cols: option?.cols ?? cols },
     population: grid.reduce((acc, row, rowIdx) => {
       for (let colIdx = 0; colIdx < cols; colIdx++) {
         switch (row[colIdx]) {

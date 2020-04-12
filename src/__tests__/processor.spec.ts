@@ -131,15 +131,103 @@ describe('parse', () => {
     })
   })
 
-  describe('validation', () => {
-    it('wrong character', () => {
-      expect(() =>
-        processor.parse(`
-        - o o -
-        o - - o
-        - o o -
-      `)
-      ).toThrow(expect.any(Error))
+  it('throws on wrong character', () => {
+    expect(() =>
+      processor.parse(`
+      - o o -
+      o - - o
+      - o o -
+    `)
+    ).toThrow(expect.any(Error))
+  })
+
+  describe('with options', () => {
+    const beehive = {
+      fit: `
+        x o o x
+        o x x o
+        x o o x
+      `,
+      span: `
+        x x x x x x
+        x x o o x x
+        x o x x o x
+        x x o o x x
+        x x x x x x
+      `
+    }
+    const population = {
+      '0': {
+        '1': true,
+        '2': true
+      },
+      '1': {
+        '0': true,
+        '3': true
+      },
+      '2': {
+        '1': true,
+        '2': true
+      }
+    } as const
+
+    describe('rows', () => {
+      it('>= text rows', () => {
+        let rows = 3
+
+        expect(processor.parse(beehive.fit, { rows })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols: 4 },
+          population
+        })
+
+        rows = 5
+
+        expect(processor.parse(beehive.fit, { rows })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols: 4 },
+          population
+        })
+      })
+
+      it('<  text rows should throw an error', () => {
+        const rows = 3
+        expect(() => processor.parse(beehive.span, { rows })).toThrow(
+          expect.any(Error)
+        )
+      })
+    })
+
+    describe('cols', () => {
+      it('>= text cols', () => {
+        const rows = 3
+        let cols = 4
+
+        expect(processor.parse(beehive.fit, { cols })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols },
+          population
+        })
+
+        cols = 5
+
+        expect(processor.parse(beehive.fit, { cols })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols },
+          population
+        })
+      })
+
+      it('<  text cols should throw an error', () => {
+        const cols = 3
+        expect(() => processor.parse(beehive.span, { cols })).toThrow(
+          expect.any(Error)
+        )
+      })
     })
   })
 })
