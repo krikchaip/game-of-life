@@ -185,14 +185,15 @@ function App(props: Props) {
     const ptn = PATTERNS[e.target.value as keyof typeof PATTERNS]
     setState(({ grid }) => processor.parse(ptn.grid, { ...grid, center: true }))
     setPattern(ptn)
+    setGenerations(1)
   }
 
   return (
     <Scene>
       <Container>
         <Menu>
-          Generation: {generations}
-          <span />
+          <span>Generation: {generations}</span>
+          <span style={{ flex: 1 }} />
           <select
             aria-label="select-pattern"
             value={pattern.value}
@@ -249,10 +250,6 @@ const Menu = styled.div`
 
   display: flex;
   align-items: center;
-
-  span {
-    flex: 1;
-  }
 `
 
 const Actions = styled.div`

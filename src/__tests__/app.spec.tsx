@@ -544,5 +544,22 @@ describe('game', () => {
           ]
         `)
     })
+
+    it('reset generation everytime when changing pattern', () => {
+      const { getByText, getByLabelText } = render(<App />)
+
+      const gen = getByText(/generation/i)
+      const next = getByText(/next/i)
+      const selectPattern = getByLabelText(/select-pattern/i)
+
+      expect(gen).toHaveTextContent(/generation(.*)1/i)
+
+      user.selectOptions(selectPattern, PATTERNS.GLIDER.value)
+      user.click(next)
+      user.click(next)
+      user.selectOptions(selectPattern, PATTERNS.BEACON.value)
+
+      expect(gen).toHaveTextContent(/generation(.*)1/i)
+    })
   })
 })
