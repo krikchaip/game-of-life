@@ -363,26 +363,186 @@ describe('game', () => {
     })
   })
 
-  it('pattern selection', () => {
-    const state = processor.parse('', { rows: 7, cols: 7 })
+  describe('pattern selection', () => {
+    it('validate each pattern', () => {
+      const state = processor.parse('', { rows: 30, cols: 30 })
 
-    const { getByLabelText, getByTestId } = render(<App initialState={state} />)
-    const select = getByLabelText(/select-pattern/i)
-    const grid = getByTestId('grid-root')
+      const { getByLabelText, getByTestId } = render(
+        <App initialState={state} />
+      )
+      const select = getByLabelText(/select-pattern/i)
+      const grid = getByTestId('grid-root')
 
-    user.selectOptions(select, PATTERNS.EMPTY.value)
-    expect(grid.children).toHaveLength(0)
+      user.selectOptions(select, PATTERNS.EMPTY.value)
+      expect(grid.children).toHaveLength(0)
 
-    user.selectOptions(select, PATTERNS.BLOCK.value)
-    expect(grid.children).toHaveLength(4)
-    expect([...grid.children].map(elm => elm.getAttribute('style')))
-      .toMatchInlineSnapshot(`
-        Array [
-          "grid-row: 3; grid-column: 3;",
-          "grid-row: 3; grid-column: 4;",
-          "grid-row: 4; grid-column: 3;",
-          "grid-row: 4; grid-column: 4;",
-        ]
-      `)
+      user.selectOptions(select, PATTERNS.GLIDER.value)
+      expect(grid.children).toHaveLength(5)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 15; grid-column: 17;",
+            "grid-row: 16; grid-column: 15;",
+            "grid-row: 16; grid-column: 17;",
+            "grid-row: 17; grid-column: 16;",
+            "grid-row: 17; grid-column: 17;",
+          ]
+        `)
+
+      user.selectOptions(select, PATTERNS.LWSS.value)
+      expect(grid.children).toHaveLength(9)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 14; grid-column: 15;",
+            "grid-row: 14; grid-column: 18;",
+            "grid-row: 15; grid-column: 14;",
+            "grid-row: 16; grid-column: 14;",
+            "grid-row: 16; grid-column: 18;",
+            "grid-row: 17; grid-column: 14;",
+            "grid-row: 17; grid-column: 15;",
+            "grid-row: 17; grid-column: 16;",
+            "grid-row: 17; grid-column: 17;",
+          ]
+        `)
+
+      user.selectOptions(select, PATTERNS.HWSS.value)
+      expect(grid.children).toHaveLength(13)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 14; grid-column: 16;",
+            "grid-row: 14; grid-column: 17;",
+            "grid-row: 15; grid-column: 14;",
+            "grid-row: 15; grid-column: 19;",
+            "grid-row: 16; grid-column: 13;",
+            "grid-row: 17; grid-column: 13;",
+            "grid-row: 17; grid-column: 19;",
+            "grid-row: 18; grid-column: 13;",
+            "grid-row: 18; grid-column: 14;",
+            "grid-row: 18; grid-column: 15;",
+            "grid-row: 18; grid-column: 16;",
+            "grid-row: 18; grid-column: 17;",
+            "grid-row: 18; grid-column: 18;",
+          ]
+        `)
+
+      user.selectOptions(select, PATTERNS.BLINKER.value)
+      expect(grid.children).toHaveLength(3)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 15; grid-column: 16;",
+            "grid-row: 16; grid-column: 16;",
+            "grid-row: 17; grid-column: 16;",
+          ]
+        `)
+
+      user.selectOptions(select, PATTERNS.TOAD.value)
+      expect(grid.children).toHaveLength(6)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 15; grid-column: 15;",
+            "grid-row: 15; grid-column: 16;",
+            "grid-row: 15; grid-column: 17;",
+            "grid-row: 16; grid-column: 14;",
+            "grid-row: 16; grid-column: 15;",
+            "grid-row: 16; grid-column: 16;",
+          ]
+        `)
+
+      user.selectOptions(select, PATTERNS.BEACON.value)
+      expect(grid.children).toHaveLength(8)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 14; grid-column: 14;",
+            "grid-row: 14; grid-column: 15;",
+            "grid-row: 15; grid-column: 14;",
+            "grid-row: 15; grid-column: 15;",
+            "grid-row: 16; grid-column: 16;",
+            "grid-row: 16; grid-column: 17;",
+            "grid-row: 17; grid-column: 16;",
+            "grid-row: 17; grid-column: 17;",
+          ]
+        `)
+
+      user.selectOptions(select, PATTERNS.PULSAR.value)
+      expect(grid.children).toHaveLength(48)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 10; grid-column: 12;",
+            "grid-row: 10; grid-column: 13;",
+            "grid-row: 10; grid-column: 14;",
+            "grid-row: 10; grid-column: 18;",
+            "grid-row: 10; grid-column: 19;",
+            "grid-row: 10; grid-column: 20;",
+            "grid-row: 12; grid-column: 10;",
+            "grid-row: 12; grid-column: 15;",
+            "grid-row: 12; grid-column: 17;",
+            "grid-row: 12; grid-column: 22;",
+            "grid-row: 13; grid-column: 10;",
+            "grid-row: 13; grid-column: 15;",
+            "grid-row: 13; grid-column: 17;",
+            "grid-row: 13; grid-column: 22;",
+            "grid-row: 14; grid-column: 10;",
+            "grid-row: 14; grid-column: 15;",
+            "grid-row: 14; grid-column: 17;",
+            "grid-row: 14; grid-column: 22;",
+            "grid-row: 15; grid-column: 12;",
+            "grid-row: 15; grid-column: 13;",
+            "grid-row: 15; grid-column: 14;",
+            "grid-row: 15; grid-column: 18;",
+            "grid-row: 15; grid-column: 19;",
+            "grid-row: 15; grid-column: 20;",
+            "grid-row: 17; grid-column: 12;",
+            "grid-row: 17; grid-column: 13;",
+            "grid-row: 17; grid-column: 14;",
+            "grid-row: 17; grid-column: 18;",
+            "grid-row: 17; grid-column: 19;",
+            "grid-row: 17; grid-column: 20;",
+            "grid-row: 18; grid-column: 10;",
+            "grid-row: 18; grid-column: 15;",
+            "grid-row: 18; grid-column: 17;",
+            "grid-row: 18; grid-column: 22;",
+            "grid-row: 19; grid-column: 10;",
+            "grid-row: 19; grid-column: 15;",
+            "grid-row: 19; grid-column: 17;",
+            "grid-row: 19; grid-column: 22;",
+            "grid-row: 20; grid-column: 10;",
+            "grid-row: 20; grid-column: 15;",
+            "grid-row: 20; grid-column: 17;",
+            "grid-row: 20; grid-column: 22;",
+            "grid-row: 22; grid-column: 12;",
+            "grid-row: 22; grid-column: 13;",
+            "grid-row: 22; grid-column: 14;",
+            "grid-row: 22; grid-column: 18;",
+            "grid-row: 22; grid-column: 19;",
+            "grid-row: 22; grid-column: 20;",
+          ]
+        `)
+
+      user.selectOptions(select, PATTERNS.PENTA.value)
+      expect(grid.children).toHaveLength(12)
+      expect([...grid.children].map(elm => elm.getAttribute('style')))
+        .toMatchInlineSnapshot(`
+          Array [
+            "grid-row: 15; grid-column: 13;",
+            "grid-row: 15; grid-column: 18;",
+            "grid-row: 16; grid-column: 11;",
+            "grid-row: 16; grid-column: 12;",
+            "grid-row: 16; grid-column: 14;",
+            "grid-row: 16; grid-column: 15;",
+            "grid-row: 16; grid-column: 16;",
+            "grid-row: 16; grid-column: 17;",
+            "grid-row: 16; grid-column: 19;",
+            "grid-row: 16; grid-column: 20;",
+            "grid-row: 17; grid-column: 13;",
+            "grid-row: 17; grid-column: 18;",
+          ]
+        `)
+    })
   })
 })

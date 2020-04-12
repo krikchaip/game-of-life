@@ -10,7 +10,7 @@ type Props = {
   config?: Config
 }
 
-type Config = { speed?: number }
+type Config = { speed?: number; pattern?: Values<typeof PATTERNS> }
 type Autoplay = { active: boolean; interval?: number }
 
 const SPEED_MAP: Record<string, (n: number) => number> = {
@@ -21,31 +21,114 @@ const SPEED_MAP: Record<string, (n: number) => number> = {
 
 export const PATTERNS = {
   EMPTY: { value: '', label: 'Empty', grid: `` },
-  BLOCK: {
-    value: 'BLOCK',
-    label: 'Block',
+  GLIDER: {
+    value: 'GLIDER',
+    label: 'Glider',
     grid: `
-      x x x x
-      x o o x
-      x o o x
-      x x x x
+      x x o
+      o x o
+      x o o
+    `
+  },
+  LWSS: {
+    value: 'LWSS',
+    label: 'Light-weight spaceship',
+    grid: `
+      x o x x o
+      o x x x x
+      o x x x o
+      o o o o x
+    `
+  },
+  HWSS: {
+    value: 'HWSS',
+    label: 'Heavy-weight spaceship',
+    grid: `
+      x x x o o x x
+      x o x x x x o
+      o x x x x x x
+      o x x x x x o
+      o o o o o o x
+    `
+  },
+  BLINKER: {
+    value: 'BLINKER',
+    label: 'Blinker',
+    grid: `
+      x o x
+      x o x
+      x o x
+    `
+  },
+  TOAD: {
+    value: 'TOAD',
+    label: 'Toad',
+    grid: `
+      x o o o
+      o o o x
+    `
+  },
+  BEACON: {
+    value: 'BEACON',
+    label: 'Beacon',
+    grid: `
+      o o x x
+      o o x x
+      x x o o
+      x x o o
+    `
+  },
+  PULSAR: {
+    value: 'PULSAR',
+    label: 'Pulsar',
+    grid: `
+      x x o o o x x x o o o x x
+      x x x x x x x x x x x x x
+      o x x x x o x o x x x x o
+      o x x x x o x o x x x x o
+      o x x x x o x o x x x x o
+      x x o o o x x x o o o x x
+      x x x x x x x x x x x x x
+      x x o o o x x x o o o x x
+      o x x x x o x o x x x x o
+      o x x x x o x o x x x x o
+      o x x x x o x o x x x x o
+      x x x x x x x x x x x x x
+      x x o o o x x x o o o x x
+    `
+  },
+  PENTA: {
+    value: 'PENTA',
+    label: 'Penta-decathlon',
+    grid: `
+      x x o x x x x o x x
+      o o x o o o o x o o
+      x x o x x x x o x x
     `
   }
 }
 
+const defaultProps = (ptn: Values<typeof PATTERNS>) => {
+  const grid = { rows: 35, cols: 50 }
+  return {
+    initialState: processor.parse(ptn.grid, { ...grid, center: true }),
+    config: {
+      speed: 500,
+      pattern: ptn
+    }
+  }
+}
+
 function App(props: Props) {
-  const {
-    initialState = {
-      grid: { rows: 35, cols: 50 },
-      population: {}
-    },
-    config = { speed: 500 }
-  } = props
+  const { initialState, config } = {
+    ...defaultProps(PATTERNS.GLIDER),
+    ...props
+  }
 
   const [state, setState] = useState(initialState)
   const [speed, setSpeed] = useState<keyof typeof OPTION>('MEDIUM')
   const [generations, setGenerations] = useState(1)
-  const [pattern, setPattern] = useState(PATTERNS.EMPTY)
+  const [pattern, setPattern] = useState(PATTERNS.GLIDER)
   const [autoplay, setAutoplay] = useState<Autoplay>({ active: false })
 
   useEffect(() => {
