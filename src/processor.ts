@@ -48,6 +48,12 @@ export function stringify(state: GameState) {
 
 export type ParseOptions = { rows?: number; cols?: number }
 export function parse(text: string, option?: ParseOptions) {
+  if (!text)
+    return {
+      grid: { rows: option?.rows ?? 0, cols: option?.cols ?? 0 },
+      population: {}
+    }
+
   const grid = text
     .trim()
     .split(/\s{2,}/)

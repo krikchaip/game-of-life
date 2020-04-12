@@ -141,92 +141,167 @@ describe('parse', () => {
     ).toThrow(expect.any(Error))
   })
 
+  it('empty text return blank grid', () => {
+    expect(() => processor.parse('')).not.toThrow()
+    expect(processor.parse('')).toEqual<processor.GameState>({
+      grid: { rows: 0, cols: 0 },
+      population: {}
+    })
+  })
+
   describe('with options', () => {
     const beehive = {
-      fit: `
-        x o o x
-        o x x o
-        x o o x
-      `,
-      span: `
-        x x x x x x
-        x x o o x x
-        x o x x o x
-        x x o o x x
-        x x x x x x
-      `
-    }
-    const population = {
-      '0': {
-        '1': true,
-        '2': true
+      fit: {
+        text: `
+          x o o x
+          o x x o
+          x o o x
+        `,
+        population: {
+          '0': {
+            '1': true,
+            '2': true
+          },
+          '1': {
+            '0': true,
+            '3': true
+          },
+          '2': {
+            '1': true,
+            '2': true
+          }
+        } as const
       },
-      '1': {
-        '0': true,
-        '3': true
-      },
-      '2': {
-        '1': true,
-        '2': true
+      span: {
+        text: `
+          x x x x x x
+          x x o o x x
+          x o x x o x
+          x x o o x x
+          x x x x x x
+        `,
+        population: {
+          '1': {
+            '2': true,
+            '3': true
+          },
+          '2': {
+            '1': true,
+            '4': true
+          },
+          '3': {
+            '2': true,
+            '3': true
+          }
+        } as const
       }
-    } as const
+    }
 
     describe('rows', () => {
       it('>= text rows', () => {
         let rows = 3
-
-        expect(processor.parse(beehive.fit, { rows })).toEqual<
+        expect(processor.parse(beehive.fit.text, { rows })).toEqual<
           processor.GameState
         >({
           grid: { rows, cols: 4 },
-          population
+          population: beehive.fit.population
         })
 
         rows = 5
-
-        expect(processor.parse(beehive.fit, { rows })).toEqual<
+        expect(processor.parse(beehive.fit.text, { rows })).toEqual<
           processor.GameState
         >({
           grid: { rows, cols: 4 },
-          population
+          population: beehive.fit.population
+        })
+
+        rows = 5
+        expect(processor.parse(beehive.span.text, { rows })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols: 6 },
+          population: beehive.span.population
+        })
+
+        rows = 7
+        expect(processor.parse(beehive.span.text, { rows })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols: 6 },
+          population: beehive.span.population
         })
       })
 
       it('<  text rows should throw an error', () => {
-        const rows = 3
-        expect(() => processor.parse(beehive.span, { rows })).toThrow(
+        const rows = 2
+        expect(() => processor.parse(beehive.fit.text, { rows })).toThrow(
           expect.any(Error)
         )
+        expect(() => processor.parse(beehive.span.text, { rows })).toThrow(
+          expect.any(Error)
+        )
+      })
+
+      it('empty text return black grid with specified rows', () => {
+        expect(processor.parse('', { rows: 3 })).toEqual<processor.GameState>({
+          grid: { rows: 3, cols: 0 },
+          population: {}
+        })
       })
     })
 
     describe('cols', () => {
       it('>= text cols', () => {
-        const rows = 3
+        let rows = 3
         let cols = 4
-
-        expect(processor.parse(beehive.fit, { cols })).toEqual<
+        expect(processor.parse(beehive.fit.text, { cols })).toEqual<
           processor.GameState
         >({
           grid: { rows, cols },
-          population
+          population: beehive.fit.population
         })
 
         cols = 5
-
-        expect(processor.parse(beehive.fit, { cols })).toEqual<
+        expect(processor.parse(beehive.fit.text, { cols })).toEqual<
           processor.GameState
         >({
           grid: { rows, cols },
-          population
+          population: beehive.fit.population
+        })
+
+        rows = 5
+        cols = 6
+        expect(processor.parse(beehive.span.text, { cols })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols },
+          population: beehive.span.population
+        })
+
+        cols = 7
+        expect(processor.parse(beehive.span.text, { cols })).toEqual<
+          processor.GameState
+        >({
+          grid: { rows, cols },
+          population: beehive.span.population
         })
       })
 
       it('<  text cols should throw an error', () => {
         const cols = 3
-        expect(() => processor.parse(beehive.span, { cols })).toThrow(
+        expect(() => processor.parse(beehive.fit.text, { cols })).toThrow(
           expect.any(Error)
         )
+        expect(() => processor.parse(beehive.span.text, { cols })).toThrow(
+          expect.any(Error)
+        )
+      })
+
+      it('empty text return black grid with specified cols', () => {
+        expect(processor.parse('', { cols: 3 })).toEqual<processor.GameState>({
+          grid: { rows: 0, cols: 3 },
+          population: {}
+        })
       })
     })
   })

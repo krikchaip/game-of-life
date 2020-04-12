@@ -5,7 +5,7 @@ import { axe } from 'jest-axe'
 
 import { noop } from '@lib/utils'
 import * as processor from '../processor'
-import App from '../app'
+import App, { PATTERNS } from '../app'
 import { OPTION } from '../speed'
 
 it('render successfully', () => {
@@ -364,8 +364,23 @@ describe('game', () => {
   })
 
   it('pattern selection', () => {
-    const { getByLabelText } = render(<App />)
+    const { getByLabelText, getByTestId } = render(<App />)
+    const select = getByLabelText(/select-pattern/i)
+    const grid = getByTestId('grid-root')
 
-    getByLabelText(/select-pattern/i)
+    user.selectOptions(select, PATTERNS.EMPTY.value)
+    expect(grid.children).toHaveLength(0)
+
+    user.selectOptions(select, PATTERNS.BLOCK.value)
+    expect(grid.children).toHaveLength(4)
+    expect([...grid.children].map(elm => elm.getAttribute('style')))
+      .toMatchInlineSnapshot(`
+        Array [
+          "grid-row: 2; grid-column: 2;",
+          "grid-row: 2; grid-column: 3;",
+          "grid-row: 3; grid-column: 2;",
+          "grid-row: 3; grid-column: 3;",
+        ]
+      `)
   })
 })

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ChangeEvent } from 'react'
 import styled from 'styled-components'
 
 import * as processor from './processor'
@@ -19,6 +19,20 @@ const SPEED_MAP: Record<string, (n: number) => number> = {
   [OPTION.FAST]: n => n / 2
 }
 
+export const PATTERNS = {
+  EMPTY: { value: '', label: 'Empty', grid: `` },
+  BLOCK: {
+    value: 'BLOCK',
+    label: 'Block',
+    grid: `
+      x x x x
+      x o o x
+      x o o x
+      x x x x
+    `
+  }
+}
+
 function App(props: Props) {
   const {
     initialState = {
@@ -31,6 +45,7 @@ function App(props: Props) {
   const [state, setState] = useState(initialState)
   const [speed, setSpeed] = useState<keyof typeof OPTION>('MEDIUM')
   const [generations, setGenerations] = useState(1)
+  const [pattern, setPattern] = useState(PATTERNS.EMPTY)
   const [autoplay, setAutoplay] = useState<Autoplay>({ active: false })
 
   useEffect(() => {
@@ -83,14 +98,28 @@ function App(props: Props) {
     setSpeed(value)
   }
 
+  function handlePatternSelect(e: ChangeEvent<HTMLSelectElement>) {
+    const ptn = PATTERNS[e.target.value as keyof typeof PATTERNS]
+    setState(({ grid }) => processor.parse(ptn.grid, { ...grid }))
+    setPattern(ptn)
+  }
+
   return (
     <Scene>
       <Container>
         <Menu>
           Generation: {generations}
           <span />
-          <select aria-label="select-pattern">
-            <option value="">empty</option>
+          <select
+            aria-label="select-pattern"
+            value={pattern.value}
+            onChange={handlePatternSelect}
+          >
+            {Object.entries(PATTERNS).map(([name, option], idx) => (
+              <option value={name} key={idx}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </Menu>
         <Grid
