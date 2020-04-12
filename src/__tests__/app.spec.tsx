@@ -362,4 +362,10 @@ describe('game', () => {
       expect(gen).toHaveTextContent(/generation(.*)1/i)
     })
   })
+
+  it('pattern selection', () => {
+    const { getByLabelText } = render(<App />)
+
+    getByLabelText(/select-pattern/i)
+  })
 })

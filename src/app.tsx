@@ -89,6 +89,9 @@ function App(props: Props) {
         <Menu>
           Generation: {generations}
           <span />
+          <select aria-label="select-pattern">
+            <option value="">empty</option>
+          </select>
         </Menu>
         <Grid
           rows={state.grid.rows}
