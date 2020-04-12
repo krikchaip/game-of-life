@@ -46,7 +46,7 @@ export function stringify(state: GameState) {
   return result
 }
 
-export type ParseOptions = { rows?: number; cols?: number }
+export type ParseOptions = { rows?: number; cols?: number; center?: boolean }
 export function parse(text: string, option?: ParseOptions) {
   if (!text)
     return {
@@ -76,12 +76,17 @@ export function parse(text: string, option?: ParseOptions) {
     grid: { rows: option?.rows ?? rows, cols: option?.cols ?? cols },
     population: grid.reduce((acc, row, rowIdx) => {
       for (let colIdx = 0; colIdx < cols; colIdx++) {
+        const [shiftRows, shiftCols] = option?.center
+          ? [centering(rows, option.rows), centering(cols, option.cols)]
+          : [0, 0]
+
         switch (row[colIdx]) {
           case 'x':
             break
           case 'o':
-            if (!acc[rowIdx]) acc[rowIdx] = { [colIdx]: true }
-            else acc[rowIdx][colIdx] = true
+            if (!acc[rowIdx + shiftRows])
+              acc[rowIdx + shiftRows] = { [colIdx + shiftCols]: true }
+            else acc[rowIdx + shiftRows][colIdx + shiftCols] = true
             break
           default:
             throw new Error(
@@ -91,6 +96,15 @@ export function parse(text: string, option?: ParseOptions) {
       }
       return acc
     }, {} as Coordinates)
+  }
+
+  function centering(size: number, boundary?: number) {
+    if (!boundary) return 0
+
+    size = size % 2 === 0 ? size / 2 : Math.floor(size / 2)
+    boundary = boundary % 2 === 0 ? boundary / 2 : Math.floor(boundary / 2)
+
+    return boundary - size
   }
 }
 

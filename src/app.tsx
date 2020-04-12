@@ -100,7 +100,7 @@ function App(props: Props) {
 
   function handlePatternSelect(e: ChangeEvent<HTMLSelectElement>) {
     const ptn = PATTERNS[e.target.value as keyof typeof PATTERNS]
-    setState(({ grid }) => processor.parse(ptn.grid, { ...grid }))
+    setState(({ grid }) => processor.parse(ptn.grid, { ...grid, center: true }))
     setPattern(ptn)
   }
 

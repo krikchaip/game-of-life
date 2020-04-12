@@ -304,6 +304,49 @@ describe('parse', () => {
         })
       })
     })
+
+    describe('center', () => {
+      const option = { rows: 7, cols: 7 }
+
+      it('return center-shifted population', () => {
+        const result = processor.parse(beehive.fit.text, {
+          ...option,
+          center: true
+        })
+
+        expect(result).toEqual<processor.GameState>({
+          grid: option,
+          population: {
+            '2': {
+              '2': true,
+              '3': true
+            },
+            '3': {
+              '1': true,
+              '4': true
+            },
+            '4': {
+              '2': true,
+              '3': true
+            }
+          }
+        })
+      })
+
+      it('without option.rows and options.cols ... just return as is', () => {
+        let result = processor.parse(beehive.fit.text, { center: true })
+        expect(result).toEqual<processor.GameState>({
+          grid: { rows: 3, cols: 4 },
+          population: beehive.fit.population
+        })
+
+        result = processor.parse(beehive.span.text, { center: true })
+        expect(result).toEqual<processor.GameState>({
+          grid: { rows: 5, cols: 6 },
+          population: beehive.span.population
+        })
+      })
+    })
   })
 })
 

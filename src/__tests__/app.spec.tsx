@@ -364,7 +364,9 @@ describe('game', () => {
   })
 
   it('pattern selection', () => {
-    const { getByLabelText, getByTestId } = render(<App />)
+    const state = processor.parse('', { rows: 7, cols: 7 })
+
+    const { getByLabelText, getByTestId } = render(<App initialState={state} />)
     const select = getByLabelText(/select-pattern/i)
     const grid = getByTestId('grid-root')
 
@@ -376,10 +378,10 @@ describe('game', () => {
     expect([...grid.children].map(elm => elm.getAttribute('style')))
       .toMatchInlineSnapshot(`
         Array [
-          "grid-row: 2; grid-column: 2;",
-          "grid-row: 2; grid-column: 3;",
-          "grid-row: 3; grid-column: 2;",
           "grid-row: 3; grid-column: 3;",
+          "grid-row: 3; grid-column: 4;",
+          "grid-row: 4; grid-column: 3;",
+          "grid-row: 4; grid-column: 4;",
         ]
       `)
   })
