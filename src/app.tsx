@@ -191,6 +191,10 @@ function App(props: Props) {
   return (
     <Scene>
       <Container>
+        <Header>
+          <div className="title">Convey&apos;s Game of Life</div>
+          <div className="sub">created by: krikchaip</div>
+        </Header>
         <Menu>
           <span>Generation: {generations}</span>
           <span style={{ flex: 1 }} />
@@ -238,11 +242,27 @@ const Scene = styled.div`
   align-items: center;
   flex-direction: column;
 
+  background-color: #f0f0f0;
+
   user-select: none;
 `
 
 const Container = styled.div`
-  margin-top: 10vh;
+  margin-top: 7.5vh;
+`
+
+const Header = styled.div`
+  margin-bottom: 2rem;
+
+  .title {
+    font-size: 3rem;
+    text-align: center;
+  }
+
+  .sub {
+    font-size: 0.8rem;
+    text-align: center;
+  }
 `
 
 const Menu = styled.div`
