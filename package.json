@@ -6,6 +6,7 @@
   "author": "krikchaip <krikchai.p@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
     "preinstall": "npx only-allow pnpm",
     "prestart": "rm -rf .cache",
     "prebuild": "rm -rf dist",
@@ -19,12 +20,6 @@
     "validate:lint": "eslint --color --ignore-path .gitignore --ext .ts,.tsx .",
     "validate:types": "tsc --pretty",
     "validate:tests": "jest --colors --ci --passWithNoTests"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "run-s validate build"
-    }
   },
   "lint-staged": {
     "{lib,src,test}/**/*.{ts,tsx}": [
@@ -61,7 +56,7 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-react": "^7.19.0",
-    "husky": "^4.2.3",
+    "husky": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.1.0",
     "jest-axe": "^3.4.0",
