@@ -6,6 +6,7 @@
   "author": "krikchaip <krikchai.p@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "prestart": "rm -rf .cache",
     "prebuild": "rm -rf dist",
     "start": "parcel public/index.html -p 3000",
