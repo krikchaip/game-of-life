@@ -22,7 +22,7 @@ specifiers:
   eslint: ^6.8.0
   eslint-config-prettier: ^6.10.1
   eslint-plugin-react: ^7.19.0
-  husky: ^8.0.3
+  husky: ^8.0.0
   identity-obj-proxy: ^3.0.0
   jest: ^25.1.0
   jest-axe: ^3.4.0
