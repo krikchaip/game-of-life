@@ -28,6 +28,7 @@ jobs:
           echo "nodejs: $(node -v)"
           echo "pnpm: $(pnpm -v)"
 
+      # [TODO] remove --shamefully-hoist after migrated to vite
       - name: install dependencies
         run: pnpm install --shamefully-hoist
 
