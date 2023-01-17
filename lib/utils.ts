@@ -2,7 +2,10 @@
 export const noop = () => {}
 
 /** curried property access */
-export const props = <T>(key: keyof T) => (obj: T) => obj[key]
+export const props =
+  <T>(key: keyof T) =>
+  (obj: T) =>
+    obj[key]
 
 /** finding maximum number in an array */
 export const maximum = (arr: number[]) =>

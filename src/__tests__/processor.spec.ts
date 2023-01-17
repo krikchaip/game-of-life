@@ -200,33 +200,33 @@ describe('parse', () => {
     describe('rows', () => {
       it('>= text rows', () => {
         let rows = 3
-        expect(processor.parse(beehive.fit.text, { rows })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.fit.text, { rows })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols: 4 },
           population: beehive.fit.population
         })
 
         rows = 5
-        expect(processor.parse(beehive.fit.text, { rows })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.fit.text, { rows })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols: 4 },
           population: beehive.fit.population
         })
 
         rows = 5
-        expect(processor.parse(beehive.span.text, { rows })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.span.text, { rows })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols: 6 },
           population: beehive.span.population
         })
 
         rows = 7
-        expect(processor.parse(beehive.span.text, { rows })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.span.text, { rows })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols: 6 },
           population: beehive.span.population
         })
@@ -254,34 +254,34 @@ describe('parse', () => {
       it('>= text cols', () => {
         let rows = 3
         let cols = 4
-        expect(processor.parse(beehive.fit.text, { cols })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.fit.text, { cols })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols },
           population: beehive.fit.population
         })
 
         cols = 5
-        expect(processor.parse(beehive.fit.text, { cols })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.fit.text, { cols })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols },
           population: beehive.fit.population
         })
 
         rows = 5
         cols = 6
-        expect(processor.parse(beehive.span.text, { cols })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.span.text, { cols })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols },
           population: beehive.span.population
         })
 
         cols = 7
-        expect(processor.parse(beehive.span.text, { cols })).toEqual<
-          processor.GameState
-        >({
+        expect(
+          processor.parse(beehive.span.text, { cols })
+        ).toEqual<processor.GameState>({
           grid: { rows, cols },
           population: beehive.span.population
         })
