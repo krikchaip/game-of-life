@@ -28,23 +28,22 @@ jobs:
           echo "nodejs: $(node -v)"
           echo "pnpm: $(pnpm -v)"
 
-      # [TODO] remove --shamefully-hoist after migrated to vite
       - name: install dependencies
-        run: pnpm install --shamefully-hoist
+        run: pnpm install
 
       - name: run validate commands
         run: pnpm validate
 
-      - name: build the project
-        run: pnpm build
+      # - name: build the project
+      #   run: pnpm build
 
-      - name: publish to Github Pages
-        if: success()
-        uses: crazy-max/ghaction-github-pages@v3
-        with:
-          target_branch: gh-pages
-          build_dir: dist
-          keep_history: true
-          commit_message: ${{ format('[deploy to github pages {0}]', github.sha) }}
-        env:
-          GH_PAT: ${{ secrets.PAT }}
+      # - name: publish to Github Pages
+      #   if: success()
+      #   uses: crazy-max/ghaction-github-pages@v3
+      #   with:
+      #     target_branch: gh-pages
+      #     build_dir: dist
+      #     keep_history: true
+      #     commit_message: ${{ format('[deploy to github pages {0}]', github.sha) }}
+      #   env:
+      #     GH_PAT: ${{ secrets.PAT }}
