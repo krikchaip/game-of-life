@@ -1,4 +1,4 @@
-[![](https://github.com/krikchaip/game-of-life/workflows/build/badge.svg)](https://github.com/krikchaip/game-of-life/actions?query=workflow%3Abuild)
+[![deployment](https://github.com/krikchaip/game-of-life/actions/workflows/deployment.yml/badge.svg)](https://github.com/krikchaip/game-of-life/actions/workflows/deployment.yml)
 
 # Conway's Game of Life
 

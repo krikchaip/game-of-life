@@ -6,6 +6,8 @@
   "author": "krikchaip <krikchai.p@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
+    "preinstall": "npx only-allow pnpm",
     "prestart": "rm -rf .cache",
     "prebuild": "rm -rf dist",
     "start": "parcel public/index.html -p 3000",
@@ -18,12 +20,6 @@
     "validate:lint": "eslint --color --ignore-path .gitignore --ext .ts,.tsx .",
     "validate:types": "tsc --pretty",
     "validate:tests": "jest --colors --ci --passWithNoTests"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "run-s validate build"
-    }
   },
   "lint-staged": {
     "{lib,src,test}/**/*.{ts,tsx}": [
@@ -48,8 +44,13 @@
     "@testing-library/jest-dom": "^5.1.1",
     "@testing-library/react": "^10.0.1",
     "@testing-library/user-event": "^10.0.1",
-    "@types/jest-axe": "^3.2.1",
+    "@types/jest": "^25.1.0",
+    "@types/jest-axe": "^3.5.5",
+    "@types/react": "^16.13.1",
+    "@types/react-dom": "^17.0.1",
     "@types/styled-components": "^5.0.1",
+    "@types/testing-library__jest-dom": "^5.1.1",
+    "@types/testing-library__react": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",
     "babel-plugin-module-resolver": "^4.0.0",
@@ -60,7 +61,7 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-react": "^7.19.0",
-    "husky": "^4.2.3",
+    "husky": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.1.0",
     "jest-axe": "^3.4.0",

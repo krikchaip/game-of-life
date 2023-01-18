@@ -1,0 +1,49 @@
+name: deployment
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout master branch
+        uses: actions/checkout@v3
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: log versions
+        run: |
+          echo "nodejs: $(node -v)"
+          echo "pnpm: $(pnpm -v)"
+
+      - name: install dependencies
+        run: pnpm install
+
+      - name: run validate commands
+        run: pnpm validate
+
+      # - name: build the project
+      #   run: pnpm build
+
+      # - name: publish to Github Pages
+      #   if: success()
+      #   uses: crazy-max/ghaction-github-pages@v3
+      #   with:
+      #     target_branch: gh-pages
+      #     build_dir: dist
+      #     keep_history: true
+      #     commit_message: ${{ format('[deploy to github pages {0}]', github.sha) }}
+      #   env:
+      #     GH_PAT: ${{ secrets.PAT }}
