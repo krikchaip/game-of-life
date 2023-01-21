@@ -19,7 +19,7 @@
       "~/*": ["./src/*"]
     },
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["vite/client"]
+    "types": ["vite/client", "vitest/globals"]
   },
   "include": ["lib", "test", "src", "typings", "vite.config.ts"]
 }
