@@ -1,7 +1,4 @@
-import React from 'react'
-import styled from 'styled-components'
-
-import { props } from '@lib/utils'
+import { CSSProperties } from 'react'
 
 type Props = {
   rows: number
@@ -12,31 +9,20 @@ type Props = {
 function Grid(props: Props) {
   const { rows, cols, marks } = props
   return (
-    <Root data-testid="grid-root" rows={rows} cols={cols}>
+    <div
+      data-testid="grid-root"
+      className="grid gap-[0.0625rem] grid-rows-[repeat(var(--rows),1vw)] grid-cols-[repeat(var(--cols),1vw)] border-[thin] border-solid border-black"
+      style={{ '--rows': rows, '--cols': cols } as CSSProperties}
+    >
       {marks.map(([row, col]) => (
-        <Cell
+        <div
+          className="text-center bg-[lightgreen] shadow-[0_0_0_0.0625rem_black]"
           style={{ gridRow: row + 1, gridColumn: col + 1 }}
           key={`${row}-${col}`}
         />
       ))}
-    </Root>
+    </div>
   )
 }
-
-type RootProps = { rows: number; cols: number }
-const Root = styled.div<RootProps>`
-  display: grid;
-  grid-template-rows: repeat(${props('rows')}, 1vw);
-  grid-template-columns: repeat(${props('cols')}, 1vw);
-  grid-gap: 0.0625rem;
-
-  border: thin solid black;
-`
-
-const Cell = styled.div`
-  text-align: center;
-  background-color: lightgreen;
-  box-shadow: 0 0 0 0.0625rem black;
-`
 
 export default Grid

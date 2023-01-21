@@ -1,9 +1,8 @@
-import React, { useState, useEffect, ChangeEvent } from 'react'
-import styled from 'styled-components'
+import { useState, useEffect, ChangeEvent } from 'react'
 
-import * as processor from './processor'
-import Grid from './grid'
-import Speed, { OPTION, Props as SpeedProps } from './speed'
+import * as processor from '~/processor'
+import Grid from '~/grid'
+import Speed, { OPTION, Props as SpeedProps } from '~/speed'
 
 type Props = {
   initialState?: processor.GameState
@@ -189,13 +188,13 @@ function App(props: Props) {
   }
 
   return (
-    <Scene>
-      <Container>
-        <Header>
-          <div className="title">Convey&apos;s Game of Life</div>
-          <div className="sub">created by: krikchaip</div>
-        </Header>
-        <Menu>
+    <div className="w-screen h-screen flex items-center flex-col bg-[#f0f0f0] select-none">
+      <div className="mt-[7.5vh]">
+        <div className="mb-8 text-center">
+          <div className="text-5xl">Convey&apos;s Game of Life</div>
+          <div className="text-xs">created by: krikchaip</div>
+        </div>
+        <div className="mb-2 flex items-center">
           <span>Generation: {generations}</span>
           <span style={{ flex: 1 }} />
           <select
@@ -209,13 +208,14 @@ function App(props: Props) {
               </option>
             ))}
           </select>
-        </Menu>
+        </div>
         <Grid
           rows={state.grid.rows}
           cols={state.grid.cols}
           marks={processor.entries(state.population)}
         />
-        <Actions>
+        <div className="w-fit mx-auto mt-4 mb-0 flex items-center space-x-4">
+          <button></button>
           <Button onClick={handleRandom}>seed</Button>
           <Button onClick={handleNextGeneration}>next</Button>
           <Button
@@ -228,66 +228,14 @@ function App(props: Props) {
             value={speed}
             onChange={handleSpeedChange}
           />
-        </Actions>
-      </Container>
-    </Scene>
+        </div>
+      </div>
+    </div>
   )
 }
 
-const Scene = styled.div`
-  width: 100vw;
-  height: 100vh;
-
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-
-  background-color: #f0f0f0;
-
-  user-select: none;
-`
-
-const Container = styled.div`
-  margin-top: 7.5vh;
-`
-
-const Header = styled.div`
-  margin-bottom: 2rem;
-
-  .title {
-    font-size: 3rem;
-    text-align: center;
-  }
-
-  .sub {
-    font-size: 0.8rem;
-    text-align: center;
-  }
-`
-
-const Menu = styled.div`
-  margin-bottom: 0.5rem;
-
-  display: flex;
-  align-items: center;
-`
-
-const Actions = styled.div`
-  width: fit-content;
-  margin: 1rem auto 0 auto;
-
-  display: flex;
-  align-items: center;
-
-  > :not(:last-child) {
-    margin-right: 1rem;
-  }
-`
-
-const Button = styled.button`
-  padding: 0.25rem 0.5rem;
-  text-transform: uppercase;
-  cursor: pointer;
-`
+const Button = (props: JSX.IntrinsicElements['button']) => (
+  <button className="py-1 px-2 uppercase cursor-pointer" {...props} />
+)
 
 export default App

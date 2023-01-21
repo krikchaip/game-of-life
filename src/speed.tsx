@@ -1,11 +1,8 @@
-import React, { InputHTMLAttributes, ChangeEvent } from 'react'
-import styled from 'styled-components'
+import { InputHTMLAttributes, ChangeEvent } from 'react'
 
-export type Props = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  keyof OwnProps
-> &
-  OwnProps
+export type Props = OwnProps &
+  Omit<InputHTMLAttributes<HTMLInputElement>, keyof OwnProps>
+
 type OwnProps = {
   value?: keyof typeof OPTION
   onChange?: (value: Exclude<OwnProps['value'], undefined>) => unknown
@@ -31,8 +28,8 @@ function Speed(props: Props) {
   }
 
   return (
-    <Container>
-      <Input
+    <div className="relative inline-flex">
+      <input
         {...otherProps}
         type="range"
         min={OPTION.SLOW}
@@ -46,22 +43,12 @@ function Speed(props: Props) {
         medium
       </Mark>
       <Mark style={{ top: '-85%', right: '0' }}>fast</Mark>
-    </Container>
+    </div>
   )
 }
 
-const Container = styled.span`
-  position: relative;
-  display: inline-flex;
-`
-
-const Input = styled.input``
-
-const Mark = styled.div`
-  position: absolute;
-  font-family: monospace;
-  font-size: 10px;
-  letter-spacing: -1px;
-`
+const Mark = (props: JSX.IntrinsicElements['div']) => (
+  <div className="absolute text-[10px] font-mono tracking-[-1px]" {...props} />
+)
 
 export default Speed
