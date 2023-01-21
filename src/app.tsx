@@ -188,7 +188,7 @@ function App(props: Props) {
   }
 
   return (
-    <div className="w-screen h-screen flex items-center flex-col bg-[#f0f0f0] select-none">
+    <div className="flex h-screen w-screen select-none flex-col items-center bg-[#f0f0f0]">
       <div className="mt-[7.5vh]">
         <div className="mb-8 text-center">
           <div className="text-5xl">Convey&apos;s Game of Life</div>
@@ -214,7 +214,7 @@ function App(props: Props) {
           cols={state.grid.cols}
           marks={processor.entries(state.population)}
         />
-        <div className="w-fit mx-auto mt-4 mb-0 flex items-center space-x-4">
+        <div className="mx-auto mt-4 mb-0 flex w-fit items-center space-x-4">
           <button></button>
           <Button onClick={handleRandom}>seed</Button>
           <Button onClick={handleNextGeneration}>next</Button>
@@ -235,7 +235,7 @@ function App(props: Props) {
 }
 
 const Button = (props: JSX.IntrinsicElements['button']) => (
-  <button className="py-1 px-2 uppercase cursor-pointer" {...props} />
+  <button className="cursor-pointer py-1 px-2 uppercase" {...props} />
 )
 
 export default App

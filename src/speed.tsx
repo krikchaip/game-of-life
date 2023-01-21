@@ -48,7 +48,7 @@ function Speed(props: Props) {
 }
 
 const Mark = (props: JSX.IntrinsicElements['div']) => (
-  <div className="absolute text-[10px] font-mono tracking-[-1px]" {...props} />
+  <div className="absolute font-mono text-[10px] tracking-[-1px]" {...props} />
 )
 
 export default Speed
