@@ -1,9 +1,8 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import { build, fake } from '@jackfranklin/test-data-bot'
 
-import { GameState, entries } from '../processor'
-import Grid from '../grid'
+import { GameState, entries } from '~/processor'
+import Grid from '~/grid'
 
 const stateBuilder = (): GameState => {
   const GRID_LIMIT = { min: 3, max: 20 }
@@ -39,8 +38,10 @@ it('render specified #rows and #cols accordingly', () => {
 
   const root = getByTestId('grid-root')
 
-  expect(root).toHaveAttribute('rows', grid.rows.toString())
-  expect(root).toHaveAttribute('cols', grid.cols.toString())
+  expect(root).toHaveStyle({
+    '--rows': grid.rows.toString(),
+    '--cols': grid.cols.toString()
+  })
 })
 
 it('render cells which #cells <= #rows * #cols', () => {

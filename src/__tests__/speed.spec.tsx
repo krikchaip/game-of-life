@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
 
 import Speed, { OPTION, STEP } from '../speed'
@@ -22,7 +21,7 @@ it('allow only 3 options slow, medium ,fast (default medium)', () => {
 })
 
 it('call onChange with speed option', () => {
-  const onChange = jest.fn()
+  const onChange = vi.fn()
   const { container } = render(<Speed value={'MEDIUM'} onChange={onChange} />)
 
   const range = container.querySelector('input')!

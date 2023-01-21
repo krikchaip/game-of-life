@@ -1,14 +1,14 @@
-import React from 'react'
 import user from '@testing-library/user-event'
 import { render, act, fireEvent } from '@testing-library/react'
 
 import { noop } from '@lib/utils'
-import * as processor from '../processor'
-import App, { PATTERNS } from '../app'
-import { OPTION } from '../speed'
+
+import * as processor from '~/processor'
+import App, { PATTERNS } from '~/app'
+import { OPTION } from '~/speed'
 
 it('render successfully', () => {
-  const spy = jest.spyOn(console, 'error').mockImplementation(noop)
+  const spy = vi.spyOn(console, 'error').mockImplementation(noop)
 
   expect(() => render(<App />)).not.toThrow()
   expect(console.error).not.toBeCalled()
@@ -24,11 +24,11 @@ describe('game', () => {
   `)
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('next generation', () => {
-    jest.spyOn(processor, 'nextGeneration')
+    vi.spyOn(processor, 'nextGeneration')
 
     const { getByText, getByTestId } = render(<App initialState={state} />)
     const next = getByText(/next/i)
@@ -59,16 +59,16 @@ describe('game', () => {
     `)
 
     beforeEach(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('start', () => {
-      jest.spyOn(processor, 'nextGeneration')
-      jest.spyOn(console, 'error')
+      vi.spyOn(processor, 'nextGeneration')
+      vi.spyOn(console, 'error')
 
       const { getByText, getByTestId, unmount } = render(
         <App initialState={state} config={config} />
@@ -81,7 +81,7 @@ describe('game', () => {
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
       expect(processor.nextGeneration).toBeCalledWith(
         state,
@@ -96,7 +96,7 @@ describe('game', () => {
           ]
         `)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(2)
       expect(processor.nextGeneration).toBeCalledWith(
         nextState,
@@ -112,36 +112,36 @@ describe('game', () => {
         `)
 
       unmount()
-      act(() => void jest.runOnlyPendingTimers())
+      act(() => void vi.runOnlyPendingTimers())
       expect(console.error).not.toBeCalled()
     })
 
     it('stop', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByText } = render(<App initialState={state} config={config} />)
       const play = getByText(/play/i)
-      const timerCountBefore = jest.getTimerCount()
+      const timerCountBefore = vi.getTimerCount()
 
       user.click(play)
 
       expect(play).toHaveTextContent(/stop/i)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
 
       user.click(play)
 
       expect(play).toHaveTextContent(/play/i)
-      expect(jest.getTimerCount()).toBe(timerCountBefore)
+      expect(vi.getTimerCount()).toBe(timerCountBefore)
 
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
       expect(processor.nextGeneration).not.toBeCalledTimes(3)
     })
   })
 
   it('random', () => {
-    jest.spyOn(processor, 'seed').mockReturnValue(
+    vi.spyOn(processor, 'seed').mockReturnValue(
       processor.parse(`
         x x x x
         x o x o
@@ -172,19 +172,19 @@ describe('game', () => {
     const config = { speed: 1000 }
 
     beforeAll(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     afterEach(() => {
-      jest.clearAllTimers()
+      vi.clearAllTimers()
     })
 
     it('slow   = config * 2', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -198,18 +198,18 @@ describe('game', () => {
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed * 2))
+      act(() => void vi.advanceTimersByTime(config.speed * 2))
       expect(processor.nextGeneration).toBeCalledTimes(1)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(2)
     })
 
     it('medium = config', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -223,12 +223,12 @@ describe('game', () => {
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
     })
 
     it('fast   = config / 2', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -242,12 +242,12 @@ describe('game', () => {
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      act(() => void vi.advanceTimersByTime(config.speed / 2))
       expect(processor.nextGeneration).toBeCalledTimes(1)
     })
 
     it('while playing', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -260,15 +260,15 @@ describe('game', () => {
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
-      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      act(() => void vi.advanceTimersByTime(config.speed / 2))
       expect(processor.nextGeneration).toBeCalledTimes(2)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.SLOW } })
-      act(() => void jest.advanceTimersByTime(config.speed * 2))
+      act(() => void vi.advanceTimersByTime(config.speed * 2))
       expect(processor.nextGeneration).toBeCalledTimes(3)
     })
   })
@@ -289,7 +289,7 @@ describe('game', () => {
     })
 
     it('from autoplay', () => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
 
       const config = { speed: 1000 }
       const { getByText } = render(<App initialState={state} config={config} />)
@@ -301,18 +301,18 @@ describe('game', () => {
 
       user.click(play)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(gen).toHaveTextContent(/generation(.*)2/i)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(gen).toHaveTextContent(/generation(.*)3/i)
 
-      jest.clearAllTimers()
-      jest.useRealTimers()
+      vi.clearAllTimers()
+      vi.useRealTimers()
     })
 
     it('from changing speed during autoplay', () => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
 
       const config = { speed: 1000 }
       const { getByText, getByLabelText } = render(
@@ -325,16 +325,16 @@ describe('game', () => {
 
       user.click(play)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
 
-      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      act(() => void vi.advanceTimersByTime(config.speed / 2))
       expect(gen).toHaveTextContent(/generation(.*)4/i)
 
-      jest.clearAllTimers()
-      jest.useRealTimers()
+      vi.clearAllTimers()
+      vi.useRealTimers()
     })
 
     it('reset when seed', () => {
