@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     globals: true,
-    setupFiles: ['@testing-library/jest-dom', 'jest-styled-components']
+    snapshotFormat: { printBasicPrototype: true },
+    setupFiles: ['test/setup']
   }
 })
