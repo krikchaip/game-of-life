@@ -5,12 +5,12 @@
   "repository": "git@github.com:krikchaip/game-of-life.git",
   "author": "krikchaip <krikchai.p@gmail.com>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "prestart": "rm -rf .cache",
-    "prebuild": "rm -rf dist",
-    "start": "parcel public/index.html -p 3000",
-    "build": "parcel build public/index.html --public-url ./ --experimental-scope-hoisting",
+    "start": "vite --port 3000",
+    "preview": "vite preview --port 3000",
+    "build": "vite build --outDir dist",
     "test": "jest --watch",
     "coverage": "jest --coverage && open ./coverage/lcov-report/index.html",
     "format": "prettier --ignore-path .gitignore --write \"{lib,src,test}/**/*.{ts,tsx}\"",
@@ -58,9 +58,9 @@
     "jest-styled-components": "^7.0.0",
     "jest-watch-typeahead": "^0.4.2",
     "npm-run-all": "^4.1.5",
-    "parcel-bundler": "^1.12.4",
     "prettier": "^2.0.1",
     "ts-jest": "^25.2.1",
-    "typescript": "^3.8.3"
+    "typescript": "^4.9.4",
+    "vite": "^4.0.4",
   }
 }
