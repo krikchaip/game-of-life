@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     globals: true,
     snapshotFormat: { printBasicPrototype: true },
+    environment: 'jsdom',
     setupFiles: ['test/setup']
   }
 })
