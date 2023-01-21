@@ -8,10 +8,6 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     globals: true,
-    setupFiles: [
-      '@testing-library/jest-dom',
-      'jest-styled-components',
-      'jest-axe/extend-expect'
-    ]
+    setupFiles: ['@testing-library/jest-dom', 'jest-styled-components']
   }
 })

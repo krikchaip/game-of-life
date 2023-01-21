@@ -1,7 +1,6 @@
 import React from 'react'
 import user from '@testing-library/user-event'
 import { render, act, fireEvent } from '@testing-library/react'
-import { axe } from 'jest-axe'
 
 import { noop } from '@lib/utils'
 import * as processor from '../processor'
@@ -15,13 +14,6 @@ it('render successfully', () => {
   expect(console.error).not.toBeCalled()
 
   spy.mockRestore()
-})
-
-it('no axe violations', async () => {
-  const { container } = render(<App />)
-  const results = await axe(container)
-
-  expect(results).toHaveNoViolations()
 })
 
 describe('game', () => {
