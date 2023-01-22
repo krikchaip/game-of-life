@@ -1,7 +1,8 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@jackfranklin/test-data-bot': ^1.1.0
+  '@faker-js/faker': ^7.6.0
+  '@jackfranklin/test-data-bot': ^2.0.0
   '@testing-library/jest-dom': ^5.16.5
   '@testing-library/react': ^10.0.1
   '@testing-library/user-event': ^10.0.1
@@ -34,7 +35,8 @@ dependencies:
   react-dom: 16.14.0_react@16.14.0
 
 devDependencies:
-  '@jackfranklin/test-data-bot': 1.4.0
+  '@faker-js/faker': 7.6.0
+  '@jackfranklin/test-data-bot': 2.0.0
   '@testing-library/jest-dom': 5.16.5
   '@testing-library/react': 10.4.9_wcqkhtmu7mswc6yz4uyexck3ty
   '@testing-library/user-event': 10.4.1_yxlyej73nftwmh2fiao7paxmlm
@@ -510,19 +512,19 @@ packages:
     dev: true
     optional: true
 
+  /@faker-js/faker/7.6.0:
+    resolution: {integrity: sha512-XK6BTq1NDMo9Xqw/YkYyGjSsg44fbNwYRx7QK2CuoQgyy+f1rrTDHoExVM5PsyXCtfl2vs2vVJ0MN0yN6LppRw==}
+    engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    dev: true
+
   /@istanbuljs/schema/0.1.3:
     resolution: {integrity: sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==}
     engines: {node: '>=8'}
     dev: true
 
-  /@jackfranklin/test-data-bot/1.4.0:
-    resolution: {integrity: sha512-wVb1pZAVDJeYqr0e4/m8seqW7VFUFs4cQFPCRHTkkl7GRtWX8xr0gL5k0Z4YS3lRlx2bs04ica675l9Eco5Bww==}
-    engines: {node: '>=10.13'}
-    dependencies:
-      '@types/faker': 5.5.9
-      '@types/lodash': 4.14.178
-      faker: 5.5.3
-      lodash: 4.17.21
+  /@jackfranklin/test-data-bot/2.0.0:
+    resolution: {integrity: sha512-LA/rc2Y28JdvvPjCEYLx8xGm76bj8yphvybP0iwMiol3qVJlz59zSILuLxGKtxKcyCXoYCC3aUOsRmql1AqjBw==}
+    engines: {node: '>=12'}
     dev: true
 
   /@jest/types/25.5.0:
@@ -698,10 +700,6 @@ packages:
     resolution: {integrity: sha512-OCutwjDZ4aFS6PB1UZ988C4YgwlBHJd6wCeQqaLdmadZ/7e+w79+hbMUFC1QXDNCmdyoRfAFdm0RypzwR+Qpag==}
     dev: true
 
-  /@types/faker/5.5.9:
-    resolution: {integrity: sha512-uCx6mP3UY5SIO14XlspxsGjgaemrxpssJI0Ol+GfhxtcKpv9pgRZYsS4eeKeHVLje6Qtc8lGszuBI461+gVZBA==}
-    dev: true
-
   /@types/istanbul-lib-coverage/2.0.4:
     resolution: {integrity: sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==}
     dev: true
@@ -734,10 +732,6 @@ packages:
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
-    dev: true
-
-  /@types/lodash/4.14.178:
-    resolution: {integrity: sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==}
     dev: true
 
   /@types/node/18.11.18:
@@ -1792,10 +1786,6 @@ packages:
       chardet: 0.7.0
       iconv-lite: 0.4.24
       tmp: 0.0.33
-    dev: true
-
-  /faker/5.5.3:
-    resolution: {integrity: sha512-wLTv2a28wjUyWkbnX7u/ABZBkUkIF2fCd73V6P2oFqEGEktDfzWx4UxrSqtPRw0xPRAcjeAOIiJWqZm3pP4u3g==}
     dev: true
 
   /fast-deep-equal/3.1.3:

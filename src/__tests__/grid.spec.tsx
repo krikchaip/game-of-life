@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
-import { build, fake } from '@jackfranklin/test-data-bot'
+import { build, perBuild } from '@jackfranklin/test-data-bot'
+import { faker as f } from '@faker-js/faker'
 
 import { GameState, entries } from '~/processor'
 import Grid from '~/grid'
@@ -8,8 +9,8 @@ const stateBuilder = (): GameState => {
   const GRID_LIMIT = { min: 3, max: 20 }
   const gridBuilder = build<GameState['grid']>('Grid', {
     fields: {
-      rows: fake(f => f.random.number(GRID_LIMIT)),
-      cols: fake(f => f.random.number(GRID_LIMIT))
+      rows: perBuild(() => f.datatype.number(GRID_LIMIT)),
+      cols: perBuild(() => f.datatype.number(GRID_LIMIT))
     }
   })
   const grid = gridBuilder()
