@@ -7,6 +7,7 @@ specifiers:
   '@testing-library/user-event': ^10.0.1
   '@types/react': ^16.13.1
   '@types/react-dom': ^17.0.1
+  '@types/testing-library__jest-dom': ^5.14.5
   '@typescript-eslint/eslint-plugin': ^2.24.0
   '@typescript-eslint/parser': ^2.24.0
   '@vitejs/plugin-react': ^3.0.1
@@ -39,6 +40,7 @@ devDependencies:
   '@testing-library/user-event': 10.4.1_yxlyej73nftwmh2fiao7paxmlm
   '@types/react': 16.14.34
   '@types/react-dom': 17.0.18
+  '@types/testing-library__jest-dom': 5.14.5
   '@typescript-eslint/eslint-plugin': 2.34.0_q4xp7iq7k3ycw5xxnwdlcekx7e
   '@typescript-eslint/parser': 2.34.0_aoruoc7n2duozhklcyjxy6wtei
   '@vitejs/plugin-react': 3.0.1_vite@4.0.4
