@@ -1,6 +1,7 @@
-import { minimum, maximum } from '@lib/utils'
+import type { SpyInstance } from 'vitest'
 
-import * as processor from '../processor'
+import { minimum, maximum } from '@lib/utils'
+import * as processor from '~/processor'
 
 describe('game rule (classic)', () => {
   it('live cell,  <2 neighbors -> die', () => {
@@ -375,10 +376,10 @@ describe('entries', () => {
 describe('seed', () => {
   const grid = { rows: 2, cols: 3 }
 
-  let random: jest.SpyInstance<number, []>
+  let random: SpyInstance<[], number>
 
   beforeEach(() => {
-    random = jest.spyOn(Math, 'random').mockReturnValue(1)
+    random = vi.spyOn(Math, 'random').mockReturnValue(1)
   })
 
   it('population coordinates must be a number', () => {

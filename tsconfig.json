@@ -1,20 +1,25 @@
 {
   "compilerOptions": {
     "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "skipLibCheck": true,
     "allowJs": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true, // required for vite
+    "isolatedModules": true, // required for vite
+    "useDefineForClassFields": true, // required for vite
+    "esModuleInterop": true, // required for react imports
+    "moduleResolution": "Node", // required for vite
+    "jsx": "preserve", // let esbuild (vite) handle the transpilation
     "target": "ESNext",
     "module": "ESNext",
-    "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
       "@lib/*": ["./lib/*"],
       "@test/*": ["./test/*"],
       "~/*": ["./src/*"]
-    }
+    },
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["lib", "test", "src", "typings"]
+  "include": ["lib", "test", "src", "typings", "vite.config.ts"]
 }

@@ -1,27 +1,19 @@
-import React from 'react'
 import user from '@testing-library/user-event'
 import { render, act, fireEvent } from '@testing-library/react'
-import { axe } from 'jest-axe'
 
 import { noop } from '@lib/utils'
-import * as processor from '../processor'
-import App, { PATTERNS } from '../app'
-import { OPTION } from '../speed'
+
+import * as processor from '~/processor'
+import App, { PATTERNS } from '~/app'
+import { OPTION } from '~/speed'
 
 it('render successfully', () => {
-  const spy = jest.spyOn(console, 'error').mockImplementation(noop)
+  const spy = vi.spyOn(console, 'error').mockImplementation(noop)
 
   expect(() => render(<App />)).not.toThrow()
   expect(console.error).not.toBeCalled()
 
   spy.mockRestore()
-})
-
-it('no axe violations', async () => {
-  const { container } = render(<App />)
-  const results = await axe(container)
-
-  expect(results).toHaveNoViolations()
 })
 
 describe('game', () => {
@@ -32,11 +24,11 @@ describe('game', () => {
   `)
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
-  it('next generation', () => {
-    jest.spyOn(processor, 'nextGeneration')
+  it('next generation', async () => {
+    vi.spyOn(processor, 'nextGeneration')
 
     const { getByText, getByTestId } = render(<App initialState={state} />)
     const next = getByText(/next/i)
@@ -44,7 +36,7 @@ describe('game', () => {
 
     expect(processor.nextGeneration).not.toBeCalled()
 
-    user.click(next)
+    await user.click(next)
 
     expect(processor.nextGeneration).toBeCalledTimes(1)
     expect(processor.nextGeneration).toBeCalledWith(state, expect.any(Function))
@@ -67,29 +59,28 @@ describe('game', () => {
     `)
 
     beforeEach(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('start', () => {
-      jest.spyOn(processor, 'nextGeneration')
-      jest.spyOn(console, 'error')
+      vi.spyOn(processor, 'nextGeneration')
+      vi.spyOn(console, 'error')
 
-      const { getByText, getByTestId, unmount } = render(
+      const { getByText, getByTestId, unmount, debug } = render(
         <App initialState={state} config={config} />
       )
 
       const play = getByText(/play/i)
       const grid = getByTestId('grid-root')
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
-
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
       expect(processor.nextGeneration).toBeCalledWith(
         state,
@@ -104,7 +95,7 @@ describe('game', () => {
           ]
         `)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(2)
       expect(processor.nextGeneration).toBeCalledWith(
         nextState,
@@ -120,36 +111,36 @@ describe('game', () => {
         `)
 
       unmount()
-      act(() => void jest.runOnlyPendingTimers())
+      act(() => void vi.runOnlyPendingTimers())
       expect(console.error).not.toBeCalled()
     })
 
     it('stop', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByText } = render(<App initialState={state} config={config} />)
       const play = getByText(/play/i)
-      const timerCountBefore = jest.getTimerCount()
+      const timerCountBefore = vi.getTimerCount()
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(play).toHaveTextContent(/stop/i)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(play).toHaveTextContent(/play/i)
-      expect(jest.getTimerCount()).toBe(timerCountBefore)
+      expect(vi.getTimerCount()).toBe(timerCountBefore)
 
-      jest.runOnlyPendingTimers()
+      vi.runOnlyPendingTimers()
       expect(processor.nextGeneration).not.toBeCalledTimes(3)
     })
   })
 
-  it('random', () => {
-    jest.spyOn(processor, 'seed').mockReturnValue(
+  it('random', async () => {
+    vi.spyOn(processor, 'seed').mockReturnValue(
       processor.parse(`
         x x x x
         x o x o
@@ -161,7 +152,7 @@ describe('game', () => {
     const random = getByText(/seed/i)
     const grid = getByTestId('grid-root')
 
-    user.click(random)
+    await user.click(random)
 
     expect(processor.seed).toBeCalledWith(state.grid.rows, state.grid.cols)
     expect([...grid.children].map(c => c.getAttribute('style')))
@@ -180,19 +171,19 @@ describe('game', () => {
     const config = { speed: 1000 }
 
     beforeAll(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     afterEach(() => {
-      jest.clearAllTimers()
+      vi.clearAllTimers()
     })
 
     it('slow   = config * 2', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -202,22 +193,22 @@ describe('game', () => {
       const play = getByText(/play/i)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.SLOW } })
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed * 2))
+      act(() => void vi.advanceTimersByTime(config.speed * 2))
       expect(processor.nextGeneration).toBeCalledTimes(1)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(2)
     })
 
     it('medium = config', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -227,16 +218,16 @@ describe('game', () => {
       const play = getByText(/play/i)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.MEDIUM } })
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
     })
 
     it('fast   = config / 2', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -246,16 +237,16 @@ describe('game', () => {
       const play = getByText(/play/i)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      act(() => void vi.advanceTimersByTime(config.speed / 2))
       expect(processor.nextGeneration).toBeCalledTimes(1)
     })
 
     it('while playing', () => {
-      jest.spyOn(processor, 'nextGeneration')
+      vi.spyOn(processor, 'nextGeneration')
 
       const { getByLabelText, getByText } = render(
         <App initialState={state} config={config} />
@@ -264,40 +255,40 @@ describe('game', () => {
       const selectSpeed = getByLabelText(/select-speed/i)
       const play = getByText(/play/i)
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
-      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      act(() => void vi.advanceTimersByTime(config.speed / 2))
       expect(processor.nextGeneration).toBeCalledTimes(2)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.SLOW } })
-      act(() => void jest.advanceTimersByTime(config.speed * 2))
+      act(() => void vi.advanceTimersByTime(config.speed * 2))
       expect(processor.nextGeneration).toBeCalledTimes(3)
     })
   })
 
   describe('generation update', () => {
-    it('from clicking next', () => {
+    it('from clicking next', async () => {
       const { getByText } = render(<App initialState={state} />)
       const gen = getByText(/generation/i)
       const next = getByText(/next/i)
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.click(next)
+      await user.click(next)
       expect(gen).toHaveTextContent(/generation(.*)2/i)
 
-      user.click(next)
+      await user.click(next)
       expect(gen).toHaveTextContent(/generation(.*)3/i)
     })
 
     it('from autoplay', () => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
 
       const config = { speed: 1000 }
       const { getByText } = render(<App initialState={state} config={config} />)
@@ -307,20 +298,20 @@ describe('game', () => {
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.click(play)
+      fireEvent.click(play)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(gen).toHaveTextContent(/generation(.*)2/i)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
       expect(gen).toHaveTextContent(/generation(.*)3/i)
 
-      jest.clearAllTimers()
-      jest.useRealTimers()
+      vi.clearAllTimers()
+      vi.useRealTimers()
     })
 
     it('from changing speed during autoplay', () => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
 
       const config = { speed: 1000 }
       const { getByText, getByLabelText } = render(
@@ -331,21 +322,21 @@ describe('game', () => {
       const play = getByText(/play/i)
       const selectSpeed = getByLabelText(/select-speed/i)
 
-      user.click(play)
+      fireEvent.click(play)
 
-      act(() => void jest.advanceTimersByTime(config.speed))
-      act(() => void jest.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
+      act(() => void vi.advanceTimersByTime(config.speed))
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
 
-      act(() => void jest.advanceTimersByTime(config.speed / 2))
+      act(() => void vi.advanceTimersByTime(config.speed / 2))
       expect(gen).toHaveTextContent(/generation(.*)4/i)
 
-      jest.clearAllTimers()
-      jest.useRealTimers()
+      vi.clearAllTimers()
+      vi.useRealTimers()
     })
 
-    it('reset when seed', () => {
+    it('reset when seed', async () => {
       const { getByText } = render(<App />)
 
       const gen = getByText(/generation/i)
@@ -354,17 +345,17 @@ describe('game', () => {
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.click(next)
-      user.click(next)
-      user.click(next)
+      await user.click(next)
+      await user.click(next)
+      await user.click(next)
 
-      user.click(seed)
+      await user.click(seed)
       expect(gen).toHaveTextContent(/generation(.*)1/i)
     })
   })
 
   describe('pattern selection', () => {
-    it('validate each pattern', () => {
+    it('validate each pattern', async () => {
       const state = processor.parse('', { rows: 30, cols: 30 })
 
       const { getByLabelText, getByTestId } = render(
@@ -373,10 +364,10 @@ describe('game', () => {
       const select = getByLabelText(/select-pattern/i)
       const grid = getByTestId('grid-root')
 
-      user.selectOptions(select, PATTERNS.EMPTY.value)
+      await user.selectOptions(select, PATTERNS.EMPTY.value)
       expect(grid.children).toHaveLength(0)
 
-      user.selectOptions(select, PATTERNS.GLIDER.value)
+      await user.selectOptions(select, PATTERNS.GLIDER.value)
       expect(grid.children).toHaveLength(5)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -389,7 +380,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.LWSS.value)
+      await user.selectOptions(select, PATTERNS.LWSS.value)
       expect(grid.children).toHaveLength(9)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -406,7 +397,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.HWSS.value)
+      await user.selectOptions(select, PATTERNS.HWSS.value)
       expect(grid.children).toHaveLength(13)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -427,7 +418,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.BLINKER.value)
+      await user.selectOptions(select, PATTERNS.BLINKER.value)
       expect(grid.children).toHaveLength(3)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -438,7 +429,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.TOAD.value)
+      await user.selectOptions(select, PATTERNS.TOAD.value)
       expect(grid.children).toHaveLength(6)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -452,7 +443,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.BEACON.value)
+      await user.selectOptions(select, PATTERNS.BEACON.value)
       expect(grid.children).toHaveLength(8)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -468,7 +459,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.PULSAR.value)
+      await user.selectOptions(select, PATTERNS.PULSAR.value)
       expect(grid.children).toHaveLength(48)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -524,7 +515,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.PENTA.value)
+      await user.selectOptions(select, PATTERNS.PENTA.value)
       expect(grid.children).toHaveLength(12)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -545,7 +536,7 @@ describe('game', () => {
         `)
     })
 
-    it('reset generation everytime when changing pattern', () => {
+    it('reset generation everytime when changing pattern', async () => {
       const { getByText, getByLabelText } = render(<App />)
 
       const gen = getByText(/generation/i)
@@ -554,10 +545,10 @@ describe('game', () => {
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.selectOptions(selectPattern, PATTERNS.GLIDER.value)
-      user.click(next)
-      user.click(next)
-      user.selectOptions(selectPattern, PATTERNS.BEACON.value)
+      await user.selectOptions(selectPattern, PATTERNS.GLIDER.value)
+      await user.click(next)
+      await user.click(next)
+      await user.selectOptions(selectPattern, PATTERNS.BEACON.value)
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
     })

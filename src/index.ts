@@ -1,9 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import '~/styles/index.css'
+
+import { StrictMode, createElement } from 'react'
+import { createRoot } from 'react-dom/client'
 
 import App from '~/app'
 
 const app = document.createElement('main')
-document.body.appendChild(app)
+const root = createRoot(app)
 
-ReactDOM.render(React.createElement(App), app)
+document.body.appendChild(app)
+root.render(createElement(StrictMode, null, createElement(App)))
