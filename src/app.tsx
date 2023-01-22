@@ -19,7 +19,7 @@ const SPEED_MAP: Record<string, (n: number) => number> = {
 }
 
 export const PATTERNS = {
-  EMPTY: { value: '', label: 'Empty', grid: `` },
+  EMPTY: { value: 'EMPTY', label: 'Empty', grid: `` },
   GLIDER: {
     value: 'GLIDER',
     label: 'Glider',
@@ -202,8 +202,11 @@ function App(props: Props) {
             value={pattern.value}
             onChange={handlePatternSelect}
           >
-            {Object.entries(PATTERNS).map(([name, option], idx) => (
-              <option value={name} key={idx}>
+            <option disabled value="">
+              -
+            </option>
+            {Object.values(PATTERNS).map((option, idx) => (
+              <option value={option.value} key={idx}>
                 {option.label}
               </option>
             ))}

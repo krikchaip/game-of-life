@@ -27,7 +27,7 @@ describe('game', () => {
     vi.restoreAllMocks()
   })
 
-  it('next generation', () => {
+  it('next generation', async () => {
     vi.spyOn(processor, 'nextGeneration')
 
     const { getByText, getByTestId } = render(<App initialState={state} />)
@@ -36,7 +36,7 @@ describe('game', () => {
 
     expect(processor.nextGeneration).not.toBeCalled()
 
-    user.click(next)
+    await user.click(next)
 
     expect(processor.nextGeneration).toBeCalledTimes(1)
     expect(processor.nextGeneration).toBeCalledWith(state, expect.any(Function))
@@ -70,17 +70,16 @@ describe('game', () => {
       vi.spyOn(processor, 'nextGeneration')
       vi.spyOn(console, 'error')
 
-      const { getByText, getByTestId, unmount } = render(
+      const { getByText, getByTestId, unmount, debug } = render(
         <App initialState={state} config={config} />
       )
 
       const play = getByText(/play/i)
       const grid = getByTestId('grid-root')
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
-
       act(() => void vi.advanceTimersByTime(config.speed))
       expect(processor.nextGeneration).toBeCalledTimes(1)
       expect(processor.nextGeneration).toBeCalledWith(
@@ -123,14 +122,14 @@ describe('game', () => {
       const play = getByText(/play/i)
       const timerCountBefore = vi.getTimerCount()
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(play).toHaveTextContent(/stop/i)
 
       act(() => void vi.advanceTimersByTime(config.speed))
       act(() => void vi.advanceTimersByTime(config.speed))
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(play).toHaveTextContent(/play/i)
       expect(vi.getTimerCount()).toBe(timerCountBefore)
@@ -140,7 +139,7 @@ describe('game', () => {
     })
   })
 
-  it('random', () => {
+  it('random', async () => {
     vi.spyOn(processor, 'seed').mockReturnValue(
       processor.parse(`
         x x x x
@@ -153,7 +152,7 @@ describe('game', () => {
     const random = getByText(/seed/i)
     const grid = getByTestId('grid-root')
 
-    user.click(random)
+    await user.click(random)
 
     expect(processor.seed).toBeCalledWith(state.grid.rows, state.grid.cols)
     expect([...grid.children].map(c => c.getAttribute('style')))
@@ -194,7 +193,7 @@ describe('game', () => {
       const play = getByText(/play/i)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.SLOW } })
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
@@ -219,7 +218,7 @@ describe('game', () => {
       const play = getByText(/play/i)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.MEDIUM } })
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
@@ -238,7 +237,7 @@ describe('game', () => {
       const play = getByText(/play/i)
 
       fireEvent.change(selectSpeed, { target: { value: OPTION.FAST } })
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
@@ -256,7 +255,7 @@ describe('game', () => {
       const selectSpeed = getByLabelText(/select-speed/i)
       const play = getByText(/play/i)
 
-      user.click(play)
+      fireEvent.click(play)
 
       expect(processor.nextGeneration).not.toBeCalled()
 
@@ -274,17 +273,17 @@ describe('game', () => {
   })
 
   describe('generation update', () => {
-    it('from clicking next', () => {
+    it('from clicking next', async () => {
       const { getByText } = render(<App initialState={state} />)
       const gen = getByText(/generation/i)
       const next = getByText(/next/i)
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.click(next)
+      await user.click(next)
       expect(gen).toHaveTextContent(/generation(.*)2/i)
 
-      user.click(next)
+      await user.click(next)
       expect(gen).toHaveTextContent(/generation(.*)3/i)
     })
 
@@ -299,7 +298,7 @@ describe('game', () => {
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.click(play)
+      fireEvent.click(play)
 
       act(() => void vi.advanceTimersByTime(config.speed))
       expect(gen).toHaveTextContent(/generation(.*)2/i)
@@ -323,7 +322,7 @@ describe('game', () => {
       const play = getByText(/play/i)
       const selectSpeed = getByLabelText(/select-speed/i)
 
-      user.click(play)
+      fireEvent.click(play)
 
       act(() => void vi.advanceTimersByTime(config.speed))
       act(() => void vi.advanceTimersByTime(config.speed))
@@ -337,7 +336,7 @@ describe('game', () => {
       vi.useRealTimers()
     })
 
-    it('reset when seed', () => {
+    it('reset when seed', async () => {
       const { getByText } = render(<App />)
 
       const gen = getByText(/generation/i)
@@ -346,17 +345,17 @@ describe('game', () => {
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.click(next)
-      user.click(next)
-      user.click(next)
+      await user.click(next)
+      await user.click(next)
+      await user.click(next)
 
-      user.click(seed)
+      await user.click(seed)
       expect(gen).toHaveTextContent(/generation(.*)1/i)
     })
   })
 
   describe('pattern selection', () => {
-    it('validate each pattern', () => {
+    it('validate each pattern', async () => {
       const state = processor.parse('', { rows: 30, cols: 30 })
 
       const { getByLabelText, getByTestId } = render(
@@ -365,10 +364,10 @@ describe('game', () => {
       const select = getByLabelText(/select-pattern/i)
       const grid = getByTestId('grid-root')
 
-      user.selectOptions(select, PATTERNS.EMPTY.value)
+      await user.selectOptions(select, PATTERNS.EMPTY.value)
       expect(grid.children).toHaveLength(0)
 
-      user.selectOptions(select, PATTERNS.GLIDER.value)
+      await user.selectOptions(select, PATTERNS.GLIDER.value)
       expect(grid.children).toHaveLength(5)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -381,7 +380,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.LWSS.value)
+      await user.selectOptions(select, PATTERNS.LWSS.value)
       expect(grid.children).toHaveLength(9)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -398,7 +397,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.HWSS.value)
+      await user.selectOptions(select, PATTERNS.HWSS.value)
       expect(grid.children).toHaveLength(13)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -419,7 +418,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.BLINKER.value)
+      await user.selectOptions(select, PATTERNS.BLINKER.value)
       expect(grid.children).toHaveLength(3)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -430,7 +429,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.TOAD.value)
+      await user.selectOptions(select, PATTERNS.TOAD.value)
       expect(grid.children).toHaveLength(6)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -444,7 +443,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.BEACON.value)
+      await user.selectOptions(select, PATTERNS.BEACON.value)
       expect(grid.children).toHaveLength(8)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -460,7 +459,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.PULSAR.value)
+      await user.selectOptions(select, PATTERNS.PULSAR.value)
       expect(grid.children).toHaveLength(48)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -516,7 +515,7 @@ describe('game', () => {
           ]
         `)
 
-      user.selectOptions(select, PATTERNS.PENTA.value)
+      await user.selectOptions(select, PATTERNS.PENTA.value)
       expect(grid.children).toHaveLength(12)
       expect([...grid.children].map(elm => elm.getAttribute('style')))
         .toMatchInlineSnapshot(`
@@ -537,7 +536,7 @@ describe('game', () => {
         `)
     })
 
-    it('reset generation everytime when changing pattern', () => {
+    it('reset generation everytime when changing pattern', async () => {
       const { getByText, getByLabelText } = render(<App />)
 
       const gen = getByText(/generation/i)
@@ -546,10 +545,10 @@ describe('game', () => {
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
 
-      user.selectOptions(selectPattern, PATTERNS.GLIDER.value)
-      user.click(next)
-      user.click(next)
-      user.selectOptions(selectPattern, PATTERNS.BEACON.value)
+      await user.selectOptions(selectPattern, PATTERNS.GLIDER.value)
+      await user.click(next)
+      await user.click(next)
+      await user.selectOptions(selectPattern, PATTERNS.BEACON.value)
 
       expect(gen).toHaveTextContent(/generation(.*)1/i)
     })
