@@ -46,4 +46,4 @@ jobs:
           keep_history: true
           commit_message: ${{ format('[deploy to github pages {0}]', github.sha) }}
         env:
-          GH_PAT: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
