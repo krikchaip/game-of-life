@@ -10,7 +10,7 @@ type Props = {
 }
 
 type Config = { speed?: number; pattern?: Values<typeof PATTERNS> }
-type Autoplay = { active: boolean; interval?: number }
+type Autoplay = { active: boolean; interval?: ReturnType<typeof setInterval> }
 
 const SPEED_MAP: Record<string, (n: number) => number> = {
   [OPTION.SLOW]: n => n * 2,
