@@ -8,34 +8,38 @@ on:
       - closed
 
 jobs:
-  deploy:
+  check:
     if: github.event.pull_request.merged
+    uses: ./.github/workflows/check.yml
+
+  deploy:
+    needs: check
     runs-on: ubuntu-latest
     steps:
-      - name: checkout master branch
-        uses: actions/checkout@v3
+      # - name: checkout master branch
+      #   uses: actions/checkout@v3
 
-      - name: setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+      # - name: setup pnpm
+      #   uses: pnpm/action-setup@v2
+      #   with:
+      #     version: 7
 
-      - name: setup nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: pnpm
+      # - name: setup nodejs
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18
+      #     cache: pnpm
 
-      - name: log versions
-        run: |
-          echo "nodejs: $(node -v)"
-          echo "pnpm: $(pnpm -v)"
+      # - name: log versions
+      #   run: |
+      #     echo "nodejs: $(node -v)"
+      #     echo "pnpm: $(pnpm -v)"
 
-      - name: install dependencies
-        run: pnpm install
+      # - name: install dependencies
+      #   run: pnpm install
 
-      - name: build the project
-        run: pnpm build
+      # - name: build the project
+      #   run: pnpm build
 
       - name: publish to Github Pages
         if: success()
