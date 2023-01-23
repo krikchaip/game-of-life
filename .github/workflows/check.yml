@@ -3,6 +3,10 @@ name: check
 on:
   pull_request:
   workflow_call:
+    inputs:
+      upload:
+        type: boolean
+        default: false
 
 jobs:
   check:
@@ -36,15 +40,8 @@ jobs:
       - name: build the project
         run: pnpm build
 
-      - name: debug event name
-        env:
-          EVENT_CONTEXT: ${{ toJSON(github.event) }}
-        run: |
-          echo ${{ github.event_name }}
-          echo $EVENT_CONTEXT
-
       - name: upload build artifacts
-        if: github.event.workflow_call
+        if: inputs.upload
         uses: actions/upload-artifact@v3
         with:
           name: build

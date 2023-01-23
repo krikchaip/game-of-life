@@ -11,6 +11,8 @@ jobs:
   check:
     if: github.event.pull_request.merged
     uses: ./.github/workflows/check.yml
+    with:
+      upload: true
 
   deploy:
     needs: check
