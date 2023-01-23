@@ -22,6 +22,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build
+          path: dist
 
       - name: publish to Github Pages
         uses: crazy-max/ghaction-github-pages@v3
