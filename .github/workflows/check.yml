@@ -1,6 +1,8 @@
 name: check
 
-on: [pull_request, workflow_call]
+on:
+  pull_request:
+  workflow_call:
 
 jobs:
   check:
@@ -33,3 +35,10 @@ jobs:
 
       - name: build the project
         run: pnpm build
+
+      - name: upload build artifacts
+        if: github.event.workflow_call
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: dist
