@@ -37,7 +37,9 @@ jobs:
         run: pnpm build
 
       - name: debug event name
-        run: echo ${{ github.event_name }} ${{ toJSON(github.event) }}
+        run: |
+          echo ${{ github.event_name }}
+          echo ${{ toJSON(github.event) }}
 
       - name: upload build artifacts
         if: github.event.workflow_call
