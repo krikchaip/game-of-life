@@ -24,12 +24,12 @@ jobs:
           name: build
           path: dist
 
-      - name: publish to Github Pages
-        uses: crazy-max/ghaction-github-pages@v3
-        with:
-          target_branch: gh-pages
-          build_dir: dist
-          keep_history: true
-          commit_message: ${{ format('[deploy to github pages {0}]', github.sha) }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: publish to Github Pages
+      #   uses: crazy-max/ghaction-github-pages@v3
+      #   with:
+      #     target_branch: gh-pages
+      #     build_dir: dist
+      #     keep_history: true
+      #     commit_message: ${{ format('[deploy to github pages {0}]', github.sha) }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
