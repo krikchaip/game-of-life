@@ -4,7 +4,7 @@
 
 ![preview](https://media.giphy.com/media/XGJY08szoq1dnGsaUf/giphy.gif)
 
-[demo](https://krikchaip.github.io/game-of-life)
+[demo](https://game-of-life-krikchaip.vercel.app)
 
 ## Overview
 
