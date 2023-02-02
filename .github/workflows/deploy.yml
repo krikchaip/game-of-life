@@ -5,31 +5,27 @@ on:
     branches:
       - master
     types:
+      - opened
+      - reopened
+      - synchronize
       - closed
 
 jobs:
   check:
-    if: github.event.pull_request.merged
     uses: ./.github/workflows/check.yml
-    with:
-      upload: true
 
-  deploy:
+  preview:
     needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - name: download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: dist
+    if: github.event.action != 'closed'
+    uses: ./.github/workflows/vercel.yml
+    with:
+      target: preview
+    secrets: inherit
 
-      - name: publish to Github Pages
-        uses: crazy-max/ghaction-github-pages@v3
-        with:
-          target_branch: gh-pages
-          build_dir: dist
-          keep_history: true
-          commit_message: ${{ format('[deploy to github pages {0}]', github.sha) }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  production:
+    needs: check
+    if: github.event.pull_request.merged
+    uses: ./.github/workflows/vercel.yml
+    with:
+      target: production
+    secrets: inherit

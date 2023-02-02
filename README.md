@@ -1,10 +1,10 @@
-[![deployment](https://github.com/krikchaip/game-of-life/actions/workflows/deployment.yml/badge.svg)](https://github.com/krikchaip/game-of-life/actions/workflows/deployment.yml)
+[![deploy](https://github.com/krikchaip/game-of-life/actions/workflows/deploy.yml/badge.svg)](https://github.com/krikchaip/game-of-life/actions/workflows/deploy.yml)
 
 # Conway's Game of Life
 
 ![preview](https://media.giphy.com/media/XGJY08szoq1dnGsaUf/giphy.gif)
 
-[demo](https://krikchaip.github.io/game-of-life)
+[demo](https://game-of-life-krikchaip.vercel.app)
 
 ## Overview
 

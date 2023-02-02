@@ -1,18 +1,16 @@
 name: check
 
 on:
-  pull_request:
   workflow_call:
-    inputs:
-      upload:
-        type: boolean
-        default: false
+  pull_request:
+    branches-ignore:
+      - master
 
 jobs:
-  check:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout master branch
+      - name: checkout current branch
         uses: actions/checkout@v3
 
       - name: setup pnpm
@@ -26,23 +24,11 @@ jobs:
           node-version: 18
           cache: pnpm
 
-      - name: log versions
-        run: |
-          echo "nodejs: $(node -v)"
-          echo "pnpm: $(pnpm -v)"
-
       - name: install dependencies
         run: pnpm install
 
-      - name: run validate commands
+      - name: run validate command
         run: pnpm validate
 
-      - name: build the project
+      - name: smoke test
         run: pnpm build
-
-      - name: upload build artifacts
-        if: inputs.upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: dist
