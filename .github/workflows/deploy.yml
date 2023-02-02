@@ -11,37 +11,21 @@ on:
       - closed
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "action -> ${{ github.event.action }}"
-
   check:
     uses: ./.github/workflows/check.yml
-    with:
-      upload: true
 
   preview:
     needs: check
     if: github.event.action != 'closed'
-    runs-on: ubuntu-latest
-    steps:
-      - name: download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: dist
-
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
+    uses: ./.github/workflows/vercel.yml
+    with:
+      target: preview
+    secrets: inherit
 
   production:
     needs: check
     if: github.event.pull_request.merged
-    runs-on: ubuntu-latest
-    steps:
-      - name: download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: dist
+    uses: ./.github/workflows/vercel.yml
+    with:
+      target: production
+    secrets: inherit
